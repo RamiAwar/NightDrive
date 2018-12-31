@@ -295,6 +295,7 @@ function Car(){
 	this.body_height = 20;
 	this.body_length = 100;
 
+	this.cockpit_height = 60;
 	this.cockpit_bevel = 10;
 
 	this.ground_offset = this.body_height/2 + this.wheel_radius/2;
@@ -340,8 +341,8 @@ function Car(){
 		steps: 2,
 		depth: 1,
 		bevelEnabled: true,
-		bevelThickness: 50,
-		bevelSize: this.cockpit_bevel/2 - 0.01,
+		bevelThickness: this.cockpit_height,
+		bevelSize: this.cockpit_bevel/2,
 		bevelSegments: 1
 	};
 
@@ -349,7 +350,7 @@ function Car(){
 		steps: 1,
 		depth: 5,
 		bevelEnabled: true,
-		bevelThickness: 45,
+		bevelThickness: this.cockpit_height - 6,
 		bevelSize: this.cockpit_bevel/2 ,
 		bevelSegments: 1
 	};
@@ -362,20 +363,34 @@ function Car(){
 	var cockpit_extrusion_mesh_1 = new THREE.Mesh( cockpit_extrusion_geometry_1, cockpit_material ) ;
 	var cockpit_extrusion_mesh_2 = new THREE.Mesh(cockpit_extrusion_geometry_2, cockpit_material);
 
+	var intersection_geometry = new THREE.BoxGeometry(this.body_width*3, this.cockpit_height*2, this.body_length*3, 1, 1, 1);
+
+	intersection_geometry.applyMatrix( new THREE.Matrix4().makeTranslation(0, -this.cockpit_height, 0) );
+
+	var object = new THREE.Mesh( intersection_geometry, new THREE.MeshBasicMaterial( 0xff0000 ) );
+	var box = new THREE.BoxHelper( object, 0xffff00 );
+	this.mesh.add( box );
+
+	var object2 = new THREE.Mesh( cockpit_extrusion_mesh_2.geometry, new THREE.MeshBasicMaterial( 0xff0000 ) );
+	var box2 = new THREE.BoxHelper( object2, 0xffff00 );
+	this.mesh.add( box2 );
+
 	var c1 = THREE.CSG.toCSG(cockpit_mesh.geometry);
 	var c2 = THREE.CSG.toCSG(cockpit_extrusion_mesh_1.geometry);
 	var c3 = THREE.CSG.toCSG(cockpit_extrusion_mesh_2.geometry);
+	var c4 = THREE.CSG.toCSG(intersection_geometry);
 
 	var cockpit_border_geometry = c1.subtract(c2);
 	cockpit_border_geometry = cockpit_border_geometry.subtract(c3);
+	cockpit_border_geometry = cockpit_border_geometry.union(c4);
 	var cockpit_border_mesh = new THREE.Mesh(THREE.CSG.fromCSG( cockpit_border_geometry ), body_material) 
  	
 	
 	cockpit_mesh.scale.set(0.9,0.9,0.9);
 	cockpit_mesh.rotation.x = Math.PI/2;
 
-	cockpit_mesh.position.x = -(this.body_width - this.cockpit_bevel)/2;
-	cockpit_mesh.position.z = -this.body_length/4;
+	cockpit_mesh.position.x = -(this.body_width - this.cockpit_bevel)/2 + 2;
+	cockpit_mesh.position.z = -this.body_length/4 + 3;
 	cockpit_mesh.position.y = this.body_height/2;
 
 	cockpit_border_mesh.rotation.x = Math.PI/2;
@@ -384,8 +399,7 @@ function Car(){
 	cockpit_border_mesh.position.z = -this.body_length/4;
 	cockpit_border_mesh.position.y = this.body_height/2;
 
-	this.mesh.add(cockpit_mesh);
-	this.mesh.add(cockpit_border_mesh);
+	
 	
 
 	var radial_segments = 15;
@@ -420,8 +434,10 @@ function Car(){
 	
 	
 
-	// this.mesh.add(body_mesh);
-	// this.mesh.add(cockpit_mesh)
+	this.mesh.add(body_mesh);
+	this.mesh.add(cockpit_mesh)
+	this.mesh.add(cockpit_mesh);
+	this.mesh.add(cockpit_border_mesh);
 
 	this.mesh.add(this.wheel_mesh_array[0]);
 	this.mesh.add(this.wheel_mesh_array[1]);
