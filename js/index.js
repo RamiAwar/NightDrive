@@ -3,6 +3,9 @@ window.addEventListener('load', init, false);
 
 function init(){
 
+	// Add control GUI
+	display_controls();
+
 	// set up scene, camera, renderer
 	create_scene();
 
@@ -32,6 +35,25 @@ var Colors = {
 	brownDark:0x23190f,
 	blue:0x68c3c0,
 };
+
+function display_controls(){
+
+	// function addControlGui(controlObject) {
+	// 	var gui = new dat.GUI();
+	// 	gui.add(controlObject, 'rotationSpeed', -0.01, 0.01);
+	// 	gui.add(controlObject, 'opacity', 0.1, 1);
+	// 	gui.addColor(controlObject, 'color');
+	// }
+
+	// control = new function() {
+	// 	this.rotationSpeed = 0.005;
+	// 	this.opacity = 0.6;
+	// 	this.color = cubeMaterial.color.getHex();
+	// };
+
+	// addControlGui(control);
+
+}
 
 function create_scene(){
 
@@ -292,7 +314,7 @@ function Car(){
 	this.wheel_radius = 30;
 	this.wheel_thickness = 15;
 	this.body_width = 50;	
-	this.body_height = 20;
+	this.body_height = 10;
 	this.body_length = 100;
 
 	this.cockpit_height = 60;
@@ -304,6 +326,9 @@ function Car(){
 	var body_material = new THREE.MeshPhongMaterial({color: Colors.red, shading: THREE.FlatShading});
 	var body_mesh = new THREE.Mesh(body_geometry, body_material);
 
+
+	// COCKPIT DESIGN
+	// =========================
 
 	// Cockpit extrusion shapes
 	var cockpit_shape = new THREE.Shape();
@@ -329,7 +354,7 @@ function Car(){
 
 	
 
-	var cockpit_material = new THREE.MeshPhongMaterial( { 
+	var cockpit_glass_material = new THREE.MeshPhongMaterial( { 
 		color: Colors.white,
 		transparent: true,
 		opacity: 0.8,
@@ -355,53 +380,63 @@ function Car(){
 		bevelSegments: 1
 	};
 
+	// Create red cockpit that will become borders only
 	var cockpit_geometry = new THREE.ExtrudeGeometry( cockpit_shape, cockpit_extrude_settings );
 	var cockpit_extrusion_geometry_1 = new THREE.ExtrudeGeometry( longitudinal_extrusion, cockpit_extrusion_geometry_settings );
 	var cockpit_extrusion_geometry_2 = new THREE.ExtrudeGeometry( horizontal_extrusion, cockpit_extrusion_geometry_settings );
 
-	var cockpit_mesh = new THREE.Mesh( cockpit_geometry, cockpit_material ) ;
-	var cockpit_extrusion_mesh_1 = new THREE.Mesh( cockpit_extrusion_geometry_1, cockpit_material ) ;
-	var cockpit_extrusion_mesh_2 = new THREE.Mesh(cockpit_extrusion_geometry_2, cockpit_material);
 
-	var intersection_geometry = new THREE.BoxGeometry(this.body_width*3, this.cockpit_height*2, this.body_length*3, 1, 1, 1);
+	// Create glass cockpit mesh (slightly smaller than cockpit geometry, scale factor)
+	var cockpit_glass_mesh = new THREE.Mesh( cockpit_geometry, cockpit_glass_material ) ;
+	var cockpit_extrusion_mesh_1 = new THREE.Mesh( cockpit_extrusion_geometry_1, cockpit_glass_material ) ;
+	var cockpit_extrusion_mesh_2 = new THREE.Mesh(cockpit_extrusion_geometry_2, cockpit_glass_material);
 
-	intersection_geometry.applyMatrix( new THREE.Matrix4().makeTranslation(0, -this.cockpit_height, 0) );
 
-	var object = new THREE.Mesh( intersection_geometry, new THREE.MeshBasicMaterial( 0xff0000 ) );
-	var box = new THREE.BoxHelper( object, 0xffff00 );
-	this.mesh.add( box );
+	// Cut out excess geometry from extrude
+	var intersection_geometry = new THREE.BoxGeometry(this.cockpit_height*2, this.body_width*2, this.body_length, 1, 1, 1);
+	intersection_geometry.applyMatrix( new THREE.Matrix4().makeTranslation(this.cockpit_height/2, this.body_width/2, this.body_length/2 ));
 
-	var object2 = new THREE.Mesh( cockpit_extrusion_mesh_2.geometry, new THREE.MeshBasicMaterial( 0xff0000 ) );
-	var box2 = new THREE.BoxHelper( object2, 0xffff00 );
-	this.mesh.add( box2 );
 
-	var c1 = THREE.CSG.toCSG(cockpit_mesh.geometry);
+	// Helper objects (visual reference for development)
+	// var object = new THREE.Mesh( intersection_geometry, new THREE.MeshBasicMaterial( 0xff0000 ) );
+	// var box = new THREE.BoxHelper( object, 0xffff00 );
+	// this.mesh.add( box );
+
+	// var object2 = new THREE.Mesh( cockpit_mesh.geometry, new THREE.MeshBasicMaterial( 0xff0000 ) );
+	// var box2 = new THREE.BoxHelper( object2, 0xffff00 );
+	// this.mesh.add( box2 );
+
+
+	// Geometry boolean operations to create boder geometry and cut out excess
+	var c1 = THREE.CSG.toCSG(cockpit_glass_mesh.geometry);
 	var c2 = THREE.CSG.toCSG(cockpit_extrusion_mesh_1.geometry);
 	var c3 = THREE.CSG.toCSG(cockpit_extrusion_mesh_2.geometry);
 	var c4 = THREE.CSG.toCSG(intersection_geometry);
 
 	var cockpit_border_geometry = c1.subtract(c2);
 	cockpit_border_geometry = cockpit_border_geometry.subtract(c3);
-	cockpit_border_geometry = cockpit_border_geometry.union(c4);
+	cockpit_border_geometry = cockpit_border_geometry.subtract(c4);
 	var cockpit_border_mesh = new THREE.Mesh(THREE.CSG.fromCSG( cockpit_border_geometry ), body_material) 
  	
+ 	var b1 = THREE.CSG.toCSG(cockpit_glass_mesh.geometry);
+ 	var cockpit_glass_geometry = b1.subtract(c4);
+ 	var cockpit_glass_mesh = new THREE.Mesh(THREE.CSG.fromCSG(cockpit_glass_geometry), cockpit_glass_material);
 	
-	cockpit_mesh.scale.set(0.9,0.9,0.9);
-	cockpit_mesh.rotation.x = Math.PI/2;
 
-	cockpit_mesh.position.x = -(this.body_width - this.cockpit_bevel)/2 + 2;
-	cockpit_mesh.position.z = -this.body_length/4 + 3;
-	cockpit_mesh.position.y = this.body_height/2;
+ 	// Scale, rotation, position adjustments 
+	cockpit_glass_mesh.scale.set(0.9,0.9,0.9);
+	cockpit_glass_mesh.rotation.x = Math.PI/2;
+	cockpit_glass_mesh.position.x = -(this.body_width - this.cockpit_bevel)/2 + 2;
+	cockpit_glass_mesh.position.z = -this.body_length/4 + 3;
+	cockpit_glass_mesh.position.y = this.body_height/2;
 
 	cockpit_border_mesh.rotation.x = Math.PI/2;
-
 	cockpit_border_mesh.position.x = -(this.body_width - this.cockpit_bevel)/2;
 	cockpit_border_mesh.position.z = -this.body_length/4;
 	cockpit_border_mesh.position.y = this.body_height/2;
 
 	
-	
-
+	// Create wheels array
 	var radial_segments = 15;
 	var height_segments = 10;
 
@@ -434,9 +469,9 @@ function Car(){
 	
 	
 
+	// Add meshes to Car mesh
 	this.mesh.add(body_mesh);
-	this.mesh.add(cockpit_mesh)
-	this.mesh.add(cockpit_mesh);
+	this.mesh.add(cockpit_glass_mesh);
 	this.mesh.add(cockpit_border_mesh);
 
 	this.mesh.add(this.wheel_mesh_array[0]);
@@ -445,3 +480,6 @@ function Car(){
 	this.mesh.add(this.wheel_mesh_array[3]);
 
 }
+
+
+
