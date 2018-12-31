@@ -345,8 +345,6 @@ function Car(angle=10){
 
 	this.ground_offset = this.body_height/2 + this.wheel_radius/2;
 
-	this.left_headlight_mesh;
-	this.right_headlight_mesh;
 
 	var body_geometry = new THREE.BoxGeometry(this.body_width, this.body_height, this.body_length, 1, 1, 1);
 	var body_material = new THREE.MeshPhongMaterial({color: Colors.red, shading: THREE.FlatShading});
@@ -358,6 +356,7 @@ function Car(angle=10){
 	// Add headlights
 	var headlight_geometry = new THREE.BoxGeometry(this.headlight_width, this.headlight_height, 1, 1, 1, 1);
 	var headlight_material = new THREE.MeshPhongMaterial({color: Colors.yellow, shading: THREE.FlatShading});
+	
 	this.left_headlight_mesh = new THREE.Mesh(headlight_geometry, headlight_material);
 	this.right_headlight_mesh = new THREE.Mesh(headlight_geometry, headlight_material);
 
@@ -393,8 +392,6 @@ function Car(angle=10){
 	horizontal_extrusion.lineTo( this.body_width + 20 - this.cockpit_bevel, this.cockpit_length - this.cockpit_border_thickness );
 	horizontal_extrusion.lineTo( this.body_width + 20 - this.cockpit_bevel, this.cockpit_border_thickness );
 	horizontal_extrusion.lineTo( -40, this.cockpit_border_thickness );
-
-	
 
 	var cockpit_glass_material = new THREE.MeshPhongMaterial( { 
 		color: Colors.white,
@@ -433,11 +430,9 @@ function Car(angle=10){
 	var cockpit_extrusion_mesh_1 = new THREE.Mesh( cockpit_extrusion_geometry_1, cockpit_glass_material ) ;
 	var cockpit_extrusion_mesh_2 = new THREE.Mesh(cockpit_extrusion_geometry_2, cockpit_glass_material);
 
-
 	// Cut out excess geometry from extrude
 	var intersection_geometry = new THREE.BoxGeometry(this.cockpit_height*2, this.body_width*2, this.body_length, 1, 1, 1);
 	intersection_geometry.applyMatrix( new THREE.Matrix4().makeTranslation(this.cockpit_height/2, this.body_width/2, this.body_length/2 ));
-
 
 	// Helper objects (visual reference for development)
 	// var object = new THREE.Mesh( intersection_geometry, new THREE.MeshBasicMaterial( 0xff0000 ) );
@@ -447,7 +442,6 @@ function Car(angle=10){
 	// var object2 = new THREE.Mesh( cockpit_mesh.geometry, new THREE.MeshBasicMaterial( 0xff0000 ) );
 	// var box2 = new THREE.BoxHelper( object2, 0xffff00 );
 	// this.mesh.add( box2 );
-
 
 	// Geometry boolean operations to create boder geometry and cut out excess
 	var c1 = THREE.CSG.toCSG(cockpit_glass_mesh.geometry);
@@ -464,7 +458,6 @@ function Car(angle=10){
  	var cockpit_glass_geometry = b1.subtract(c4);
  	var cockpit_glass_mesh = new THREE.Mesh(THREE.CSG.fromCSG(cockpit_glass_geometry), cockpit_glass_material);
 	
-
  	// Scale, rotation, position adjustments 
 	cockpit_glass_mesh.scale.set(0.9,0.9,0.9);
 	cockpit_glass_mesh.rotation.x = Math.PI/2;
@@ -477,11 +470,8 @@ function Car(angle=10){
 	cockpit_border_mesh.position.z = this.cockpit_length/4;
 	cockpit_border_mesh.position.y = this.body_height/2;
 
-	
-
 	// WHEEL DESIGN
 	// =============
-
 	// Create wheels array
 	var radial_segments = 15;
 	var height_segments = 10;
@@ -541,37 +531,46 @@ function Car(angle=10){
 
 	this.left_headlight_target.position.x = this.left_headlight_mesh.position.x;
 	this.left_headlight_target.position.z = this.left_headlight_mesh.position.z - this.body_length/2;
+	this.left_headlight_target.position.y = this.left_headlight_mesh.position.y - 2*this.body_height;
 
 	this.right_headlight_target.position.x = this.right_headlight_mesh.position.x;
 	this.right_headlight_target.position.z = this.right_headlight_mesh.position.z - this.body_length/2;
-
+	this.right_headlight_target.position.y = this.right_headlight_mesh.position.y - 2*this.body_height;
 
 	// Adding spotlights
 	this.left_headlight = new THREE.SpotLight(0xffffff);
-	// var right_headlight = new THREE.SpotLight(0xffffff);
+	this.right_headlight = new THREE.SpotLight(0xffffff);
 
 	this.left_headlight.angle = Math.PI/12;
 
 	this.left_headlight.castShadow = true;
-	this.left_headlight.shadow.mapSize.width = 1024;
-	this.left_headlight.shadow.mapSize.height = 1024;
+	this.left_headlight.shadow.mapSize.width = 256;
+	this.left_headlight.shadow.mapSize.height = 256;
 	this.left_headlight.shadow.camera.near = 1;
-	this.left_headlight.shadow.camera.far = 100;
+	this.left_headlight.shadow.camera.far = 50;
 	this.left_headlight.shadow.camera.fov = 30;
 
+	this.right_headlight.angle = Math.PI/12;
 
-	// this.left_headlight.target = this.left_headlight_target;
+	this.right_headlight.castShadow = true;
+	this.right_headlight.shadow.mapSize.width = 256;
+	this.right_headlight.shadow.mapSize.height = 256;
+	this.right_headlight.shadow.camera.near = 1;
+	this.right_headlight.shadow.camera.far = 50;
+	this.right_headlight.shadow.camera.fov = 30;
 
 
-	this.spotLightHelper = new THREE.SpotLightHelper( this.left_headlight );
-	scene.add( this.spotLightHelper );
+	// Spotlight Helper for visual aid while developing
+	// this.spotLightHelper = new THREE.SpotLightHelper( this.right_headlight );
+	// scene.add( this.spotLightHelper );
 
-
-	
 
 	// ADDING FINALIZED LIGHTS
 	scene.add(this.left_headlight);
 	scene.add(this.left_headlight_target);
+	
+	scene.add(this.right_headlight);
+	scene.add(this.right_headlight_target);
 
 
 	// ADDING FINALIZED MESHES
@@ -579,8 +578,9 @@ function Car(angle=10){
 	this.mesh.add(body_mesh);
 
 	this.mesh.add(this.left_headlight_mesh);
+	this.mesh.add(this.left_headlight_target); 
+
 	this.mesh.add(this.right_headlight_mesh);
-	this.mesh.add(this.left_headlight_target);
 	this.mesh.add(this.right_headlight_target);
 
 	this.mesh.add(cockpit_glass_mesh);
@@ -596,8 +596,6 @@ function Car(angle=10){
 
 	this.update = function(){
 
-		
-
 		// Back wheel rotation animation
 		this.wheel_mesh_array[0].rotation.x -= 0.08;
 		this.wheel_mesh_array[1].rotation.x -= 0.08;	
@@ -607,9 +605,8 @@ function Car(angle=10){
 		this.wheel_mesh_array[3].rotation.x -= 0.08;	
 
 
-
 		// Headlight position update
-		this.spotLightHelper.update(); 
+		// this.spotLightHelper.update(); 
 		
 		this.left_headlight_target.position.z = this.left_headlight_mesh.position.z - this.body_length/2;
 		this.left_headlight_target.position.x = this.left_headlight_mesh.position.x;
@@ -617,17 +614,11 @@ function Car(angle=10){
 		this.right_headlight_target.position.z = this.right_headlight_mesh.position.z - this.body_length/2;
 		this.right_headlight_target.position.x = this.right_headlight_mesh.position.x;
 
-		this.left_headlight.position.set(
-			this.mesh.position.x + this.left_headlight_mesh.position.x - this.body_width/2,
-			this.mesh.position.y + this.left_headlight_mesh.position.y + 3*this.body_height/2,
-			this.mesh.position.z + this.left_headlight_mesh.position.z + this.body_height
-		);
-		
-		this.left_headlight.lookAt(
-			this.mesh.position.x + this.left_headlight_target.position.x,
-			this.mesh.position.y + this.left_headlight_target.position.y,
-			this.mesh.position.z + this.left_headlight_target.position.z
-		);
+		this.left_headlight.position.setFromMatrixPosition(this.left_headlight_mesh.matrixWorld);
+		this.right_headlight.position.setFromMatrixPosition(this.right_headlight_mesh.matrixWorld);
+
+		this.left_headlight.target = this.left_headlight_target;
+		this.right_headlight.target = this.right_headlight_target;
 		 
 	}
 
