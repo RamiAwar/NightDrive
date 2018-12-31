@@ -315,14 +315,14 @@ function Car(){
 	var longitudinal_extrusion = new THREE.Shape();
 	longitudinal_extrusion.moveTo( 5 ,-40 );
 	longitudinal_extrusion.lineTo( 5 , this.body_length/2 + 40);
-	longitudinal_extrusion.lineTo( this.body_width - 5 - this.cockpit_bevel, this.body_length/2 + 40 );
-	longitudinal_extrusion.lineTo( this.body_width - 5 - this.cockpit_bevel, -40 );
+	longitudinal_extrusion.lineTo( this.body_width - 10 - this.cockpit_bevel, this.body_length/2 + 40 );
+	longitudinal_extrusion.lineTo( this.body_width - 10 - this.cockpit_bevel, -40 );
 	longitudinal_extrusion.lineTo( 5, -40 );
 
 	var horizontal_extrusion = new THREE.Shape();
 	horizontal_extrusion.moveTo( -40 ,5 );
-	horizontal_extrusion.lineTo( -40, this.body_length/2 - 5 );
-	horizontal_extrusion.lineTo( this.body_width + 20 - this.cockpit_bevel, this.body_length/2 - 5 );
+	horizontal_extrusion.lineTo( -40, this.body_length/2 - 10 );
+	horizontal_extrusion.lineTo( this.body_width + 20 - this.cockpit_bevel, this.body_length/2 - 10 );
 	horizontal_extrusion.lineTo( this.body_width + 20 - this.cockpit_bevel, 5 );
 	horizontal_extrusion.lineTo( -40, 5 );
 
@@ -331,7 +331,7 @@ function Car(){
 	var cockpit_material = new THREE.MeshPhongMaterial( { 
 		color: Colors.white,
 		transparent: true,
-		opacity: 0.8,
+		opacity: 0.4,
 		flatShading:THREE.FlatShading 
 	} );
 
@@ -367,7 +367,7 @@ function Car(){
 	var c3 = THREE.CSG.toCSG(cockpit_extrusion_mesh_2.geometry);
 
 	var cockpit_border_geometry = c1.subtract(c2);
-	cockpit_border_geometry = cockpit_border_geometry.subtract(c3);
+	// cockpit_border_geometry = cockpit_border_geometry.subtract(c3);
 	var cockpit_border_mesh = new THREE.Mesh(THREE.CSG.fromCSG( cockpit_border_geometry ), body_material) 
  	
 	

@@ -123,30 +123,38 @@ function create_lights(){
 
 }
 
-function create_character(angle=70, world_radius=600){
+function deg2rad(angle){
+	return angle*Math.PI/180;
+}
+
+function create_character(theta=30, phi=30, world_radius=600){
 
 	car = new Car();
 	var car_scale = 1;
-	var curve_offset = 1.5;
+	var curve_offset = 6;
 
 	car.mesh.scale.set(car_scale, car_scale, car_scale);
 	
 	
 	// Calculate position depending on angle using trigonometry
-	car.mesh.position.z = Math.cos(angle* Math.PI / 180)*(world_radius + car.ground_offset - curve_offset);
-	car.mesh.position.y = Math.sin(angle* Math.PI / 180)*(world_radius + car.ground_offset - curve_offset) - 600;
+	car.mesh.position.z = Math.cos(deg2rad(theta))*Math.sin(deg2rad(phi))*(world_radius+ car.ground_offset - curve_offset);
+	car.mesh.position.x = Math.sin(deg2rad(theta))*Math.sin(deg2rad(phi))*(world_radius+ car.ground_offset - curve_offset);
+	car.mesh.position.y = Math.cos(deg2rad(phi))*(world_radius+ car.ground_offset - curve_offset) - 600;
 
-	var slope = -(car.mesh.position.y + 600)/car.mesh.position.z;
-	console.log(slope);
+	var x = car.mesh.position.x, y = car.mesh.position.y, z = car.mesh.position.z;
 
-	car.mesh.rotation.x = Math.atan(slope) + Math.PI/2;
+	var slopez = -(car.mesh.position.y + 600)/car.mesh.position.z;
+	var slopex = -(car.mesh.position.y + 600)/car.mesh.position.x;
 
+	car.mesh.rotation.x = Math.atan(slopez) + Math.PI/2;
+	// car.mesh.rotation.z = Math.atan(slopex) + Math.PI/2;
+	car.mesh.rotation.y = deg2rad(theta);
 	scene.add(car.mesh);
 }
 
 function create_environment(world_radius=600, world_width=400){
 
-	road = new Road(world_radius, world_width);
+	road = new Road(world_radius, 20, 20);
 	road.mesh.position.y = -world_radius;
 	scene.add(road.mesh);
 
@@ -179,6 +187,7 @@ function game_loop(){
 	// Front wheel rotation animation
 	car.wheel_mesh_array[2].rotation.x -= 0.08;
 	car.wheel_mesh_array[3].rotation.x -= 0.08;	
+ 
 
 	renderer.render(scene, camera);
 }
@@ -188,12 +197,9 @@ function game_loop(){
 
 
 
-function Road(radius=600, height=800, radial_segments=100, height_segments=10){
+function Road(radius=600, width_segments=10, height_segments=10){
 
-	var geometry = new THREE.CylinderGeometry( radius, radius, height, radial_segments, height_segments );	
-
-	geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
-	geometry.applyMatrix(new THREE.Matrix4().makeRotationY(-Math.PI/2));
+	var geometry = new THREE.SphereGeometry( radius, width_segments, height_segments );	
 
 	var material = new THREE.MeshPhongMaterial({
 		color: Colors.blue,
@@ -289,13 +295,11 @@ function Car(){
 
 	this.mesh = new THREE.Object3D();
 
-	this.wheel_radius = 30;
+	this.wheel_radius = 40;
 	this.wheel_thickness = 15;
 	this.body_width = 50;	
 	this.body_height = 20;
 	this.body_length = 100;
-
-	this.cockpit_bevel = 10;
 
 	this.ground_offset = this.body_height/2 + this.wheel_radius/2;
 
@@ -303,95 +307,11 @@ function Car(){
 	var body_material = new THREE.MeshPhongMaterial({color: Colors.red, shading: THREE.FlatShading});
 	var body_mesh = new THREE.Mesh(body_geometry, body_material);
 
-
-	// Cockpit extrusion shapes
-	var cockpit_shape = new THREE.Shape();
-	cockpit_shape.moveTo( 0,0 );
-	cockpit_shape.lineTo( 0, this.body_length/2);
-	cockpit_shape.lineTo( this.body_width - this.cockpit_bevel, this.body_length/2 );
-	cockpit_shape.lineTo( this.body_width - this.cockpit_bevel, 0 );
-	cockpit_shape.lineTo( 0, 0 );
-
-	var longitudinal_extrusion = new THREE.Shape();
-	longitudinal_extrusion.moveTo( 5 ,-40 );
-	longitudinal_extrusion.lineTo( 5 , this.body_length/2 + 40);
-	longitudinal_extrusion.lineTo( this.body_width - 5 - this.cockpit_bevel, this.body_length/2 + 40 );
-	longitudinal_extrusion.lineTo( this.body_width - 5 - this.cockpit_bevel, -40 );
-	longitudinal_extrusion.lineTo( 5, -40 );
-
-	var horizontal_extrusion = new THREE.Shape();
-	horizontal_extrusion.moveTo( -40 ,5 );
-	horizontal_extrusion.lineTo( -40, this.body_length/2 - 5 );
-	horizontal_extrusion.lineTo( this.body_width + 20 - this.cockpit_bevel, this.body_length/2 - 5 );
-	horizontal_extrusion.lineTo( this.body_width + 20 - this.cockpit_bevel, 5 );
-	horizontal_extrusion.lineTo( -40, 5 );
-
-	
-
-	var cockpit_material = new THREE.MeshPhongMaterial( { 
-		color: Colors.white,
-		transparent: true,
-		opacity: 0.8,
-		flatShading:THREE.FlatShading 
-	} );
-
-	// Extrusion settings
-	var cockpit_extrude_settings = {
-		steps: 2,
-		depth: 1,
-		bevelEnabled: true,
-		bevelThickness: 50,
-		bevelSize: this.cockpit_bevel/2 - 0.01,
-		bevelSegments: 1
-	};
-
-	var cockpit_extrusion_geometry_settings = {
-		steps: 1,
-		depth: 5,
-		bevelEnabled: true,
-		bevelThickness: 45,
-		bevelSize: this.cockpit_bevel/2 ,
-		bevelSegments: 1
-	};
-
-	var cockpit_geometry = new THREE.ExtrudeGeometry( cockpit_shape, cockpit_extrude_settings );
-	var cockpit_extrusion_geometry_1 = new THREE.ExtrudeGeometry( longitudinal_extrusion, cockpit_extrusion_geometry_settings );
-	var cockpit_extrusion_geometry_2 = new THREE.ExtrudeGeometry( horizontal_extrusion, cockpit_extrusion_geometry_settings );
-
-	var cockpit_mesh = new THREE.Mesh( cockpit_geometry, cockpit_material ) ;
-	var cockpit_extrusion_mesh_1 = new THREE.Mesh( cockpit_extrusion_geometry_1, cockpit_material ) ;
-	var cockpit_extrusion_mesh_2 = new THREE.Mesh(cockpit_extrusion_geometry_2, cockpit_material);
-
-	var c1 = THREE.CSG.toCSG(cockpit_mesh.geometry);
-	var c2 = THREE.CSG.toCSG(cockpit_extrusion_mesh_1.geometry);
-	var c3 = THREE.CSG.toCSG(cockpit_extrusion_mesh_2.geometry);
-
-	var cockpit_border_geometry = c1.subtract(c2);
-	cockpit_border_geometry = cockpit_border_geometry.subtract(c3);
-	var cockpit_border_mesh = new THREE.Mesh(THREE.CSG.fromCSG( cockpit_border_geometry ), body_material) 
- 	
-	
-	cockpit_mesh.scale.set(0.9,0.9,0.9);
-	cockpit_mesh.rotation.x = Math.PI/2;
-
-	cockpit_mesh.position.x = -(this.body_width - this.cockpit_bevel)/2;
-	cockpit_mesh.position.z = -this.body_length/4;
-	cockpit_mesh.position.y = this.body_height/2;
-
-	cockpit_border_mesh.rotation.x = Math.PI/2;
-
-	cockpit_border_mesh.position.x = -(this.body_width - this.cockpit_bevel)/2;
-	cockpit_border_mesh.position.z = -this.body_length/4;
-	cockpit_border_mesh.position.y = this.body_height/2;
-
-	this.mesh.add(cockpit_mesh);
-	this.mesh.add(cockpit_border_mesh);
-	
-
 	var radial_segments = 15;
 	var height_segments = 10;
 
 	this.wheel_mesh_array = [];
+
 	for(var i = 0; i < 4; i++){
 		var wheel_geometry = new THREE.CylinderGeometry( this.wheel_radius/2, this.wheel_radius/2, this.wheel_thickness, radial_segments, height_segments);
 		var wheel_material = new THREE.MeshPhongMaterial({color: Colors.white, shading:THREE.FlatShading});
@@ -420,9 +340,7 @@ function Car(){
 	
 	
 
-	// this.mesh.add(body_mesh);
-	// this.mesh.add(cockpit_mesh)
-
+	this.mesh.add(body_mesh);
 	this.mesh.add(this.wheel_mesh_array[0]);
 	this.mesh.add(this.wheel_mesh_array[1]);
 	this.mesh.add(this.wheel_mesh_array[2]);
