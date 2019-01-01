@@ -317,12 +317,12 @@ function Car(angle=40){
 		this.mesh.rotation.y = deg2rad(this.angle);
 
 		// Back wheel rotation animation
-		this.wheel_mesh_array[0].rotation.x -= 0.08;
-		this.wheel_mesh_array[1].rotation.x -= 0.08;	
+		// this.wheel_mesh_array[0].rotation.x -= 0.08;
+		// this.wheel_mesh_array[1].rotation.x -= 0.08;	
 
 		// Front wheel rotation animation
-		this.wheel_mesh_array[2].rotation.x -= 0.08;
-		this.wheel_mesh_array[3].rotation.x -= 0.08;	
+		// this.wheel_mesh_array[2].rotation.x -= 0.08;
+		// this.wheel_mesh_array[3].rotation.x -= 0.08;	
 
 
 		// Headlight position update

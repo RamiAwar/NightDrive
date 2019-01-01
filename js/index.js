@@ -1,7 +1,25 @@
 
+
+
+
+
+
+
+// Global variables
+var scene, field_of_view, aspect_ratio, near_plane, far_plane, HEIGHT, WIDTH, renderer, container;
+var hemisphere_light, shadow_light;
+var road, sky;
+var mouse = {x:0, y:0};
+var context;
+
+
 window.addEventListener('load', init, false);
 
+
 function init(){
+
+	context = new AudioContext();
+	
 
 	// set up scene, camera, renderer
 	create_scene();
@@ -23,11 +41,7 @@ function init(){
 	
 }
 
-// Global variables
-var scene, field_of_view, aspect_ratio, near_plane, far_plane, HEIGHT, WIDTH, renderer, container;
-var hemisphere_light, shadow_light;
-var road, sky;
-var mouse = {x:0, y:0};
+
 
 
 function create_scene(){
@@ -38,7 +52,7 @@ function create_scene(){
 	scene = new THREE.Scene();
 
 	// Add fog effect
-	scene.fog = new THREE.Fog(Colors.fog, 200, 1100);
+	scene.fog = new THREE.Fog(Colors.fog, 100, 1100);
 
 	// Create camera
 	aspect_ratio = WIDTH/HEIGHT;
@@ -98,10 +112,10 @@ function create_lights(){
 	scene.add(hemisphere_light);
 
 
-	ambientLight = new THREE.AmbientLight(0xff907e, .2);
+	ambientLight = new THREE.AmbientLight(0xcc907e, .4);
 	scene.add(ambientLight);
 
-	// Create directional light
+	// Create spotlight
 	shadow_light = new THREE.SpotLight(0xffffff, 0.2);
 	
 
@@ -128,8 +142,8 @@ function create_lights(){
 	scene.add(shadow_light);
 
 	// Shadow light helper
-	var helper = new THREE.SpotLightHelper( shadow_light, 50 );
-	scene.add( helper );
+	// var helper = new THREE.SpotLightHelper( shadow_light, 50 );
+	// scene.add( helper );
 
 }
 
@@ -160,6 +174,18 @@ function create_character(angle=0, world_angle=60, world_radius=600){
 	car.mesh.castShadow=true;
 	car.mesh.receiveShadow = true;
 	scene.add(car.mesh);
+
+	var listener = new THREE.AudioListener();
+	camera.add( listener );
+
+	// var sound = new THREE.Audio(listener);
+	// var audioLoader = new THREE.AudioLoader();
+	// audioLoader.load( 'sounds/engine_loop.ogg', function( buffer ) {
+	// 	sound.setBuffer( buffer );
+	// 	sound.setLoop(true);
+	// 	sound.setVolume(0.2);
+	// 	sound.play();
+	// });
 }
 
 
@@ -205,6 +231,10 @@ function game_loop(){
 
 function input_handler(event){
 
+	context.resume().then(() => {
+	    console.log("ok")
+	});
+
 	// normalize mouse input value
 	var x = (event.clientX/WIDTH)*2 - 1; // value between -1 and 1
 	var y = (event.clientY/HEIGHT)*2 - 1;// value between -1 and 1
@@ -213,13 +243,22 @@ function input_handler(event){
 
 }
 
+
 function car_movement(){
 
 	var target_x = map(mouse.x, -1, 1, -100, 100);
 	var target_y = map(mouse.y, -1, 1, 25, 175);
 
-	car.mesh.position.x = target_x;
+	var error = target_x - car.mesh.position.x;
 
+	car.mesh.position.x += error*0.05;
+
+
+	car.wheel_mesh_array[2].rotation.y = -error*error*error*0.000001 + Math.PI;
+	car.wheel_mesh_array[3].rotation.y = -error*error*error*0.000001;
+	
+	car.mesh.rotation.y = -(target_x - car.mesh.position.x)*0.002;
+	
 }
 
 

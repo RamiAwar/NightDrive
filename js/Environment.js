@@ -8,7 +8,7 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10){
 	geometry.applyMatrix(new THREE.Matrix4().makeRotationY(-Math.PI/2));
 
 	var material = new THREE.MeshPhongMaterial({
-		color: Colors.darkerBlue,
+		color: Colors.blue,
 		transparent: false
 	});
 
