@@ -38,8 +38,8 @@ function Car(angle=40){
 	this.lights = [];
 
 	var body_geometry = new THREE.BoxGeometry(this.body_width, this.body_height, this.body_length, 1, 1, 1);
-	var body_material = new THREE.MeshPhongMaterial({color: Colors.red, shading: THREE.FlatShading});
-	var body_mesh = new THREE.Mesh(body_geometry, body_material);
+	var body_material = new THREE.MeshPhongMaterial({color: Colors.red});
+	this.body_mesh = new THREE.Mesh(body_geometry, body_material);
 
 
 	// HEADLIGHT DESIGN
@@ -283,7 +283,7 @@ function Car(angle=40){
 
 	// ADDING FINALIZED MESHES
 	// Add meshes to Car mesh
-	this.mesh.add(body_mesh);
+	this.mesh.add(this.body_mesh);
 
 	this.mesh.add(this.left_headlight_mesh);
 	this.mesh.add(this.left_headlight_target); 
@@ -302,7 +302,8 @@ function Car(angle=40){
 	this.mesh.add(this.wheel_mesh_array[2]);
 	this.mesh.add(this.wheel_mesh_array[3]);
 
-
+	this.body_mesh.castShadow=true;
+	this.body_mesh.receiveShadow=true;
 
 	// Set angle function
 	this.set_angle = function(angle){
@@ -326,19 +327,19 @@ function Car(angle=40){
 
 		// Headlight position update
 		// this.spotLightHelper.update(); 
-		
-		this.left_headlight_target.position.z = this.left_headlight_mesh.position.z - this.body_length/2;
-		this.left_headlight_target.position.x = this.left_headlight_mesh.position.x;
+		this.left_headlight_target.position.setFromMatrixPosition(this.left_headlight_mesh.matrixWorld);
+		this.left_headlight_target.position.z = this.left_headlight_target.position.z - this.body_length/2;
+		this.left_headlight_target.position.y = this.left_headlight_mesh.position.y - 3*this.body_height;
 
-		this.right_headlight_target.position.z = this.right_headlight_mesh.position.z - this.body_length/2;
-		this.right_headlight_target.position.x = this.right_headlight_mesh.position.x;
+		this.right_headlight_target.position.setFromMatrixPosition(this.right_headlight_mesh.matrixWorld);
+		this.right_headlight_target.position.z = this.right_headlight_target.position.z - this.body_length/2;
+		this.right_headlight_target.position.y = this.right_headlight_mesh.position.y - 3*this.body_height;
 
 		this.left_headlight.position.setFromMatrixPosition(this.left_headlight_mesh.matrixWorld);
 		this.right_headlight.position.setFromMatrixPosition(this.right_headlight_mesh.matrixWorld);
 
 		this.left_headlight.target = this.left_headlight_target;
 		this.right_headlight.target = this.right_headlight_target;
-		 
 	}
 
 

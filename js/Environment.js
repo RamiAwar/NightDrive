@@ -8,13 +8,12 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10){
 	geometry.applyMatrix(new THREE.Matrix4().makeRotationY(-Math.PI/2));
 
 	var material = new THREE.MeshPhongMaterial({
-		color: Colors.blue,
-		transparent: false,
-		opacity: 0.8,
-		flatShading:THREE.FlatShading
+		color: Colors.darkerBlue,
+		transparent: false
 	});
 
 	this.mesh = new THREE.Mesh(geometry, material);
+
 	this.mesh.receiveShadow = true;
 }
 
@@ -56,6 +55,7 @@ function Cloud(min_clouds=5, n_cloud_spread=3){
 		// add cube to container
 		this.mesh.add(m);
 	}
+
 }
 
 

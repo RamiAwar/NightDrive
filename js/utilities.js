@@ -6,13 +6,15 @@ var Colors = {
 	red:0xf25346,
 	white:0xd8d0d1,
 	brown:0x59332e,
+	green: 0x689C80,
 	pink:0xF5986E,
-	brownDark:0x23190f,
+	darkBlue:0x231951,
 	blue:0x68c3c0,
+	darkerBlue:0x529997,
 	black: 0x171a1c,
-	yellow: 0xFDD235
+	yellow: 0xFDD235,
+	fog: 0x151719
 };
-
 
 function deg2rad(angle){
 	return angle*Math.PI/180;

@@ -38,7 +38,7 @@ function create_scene(){
 	scene = new THREE.Scene();
 
 	// Add fog effect
-	scene.fog = new THREE.Fog(0x8DA593, 200, 1100);
+	scene.fog = new THREE.Fog(Colors.fog, 200, 1100);
 
 	// Create camera
 	aspect_ratio = WIDTH/HEIGHT;
@@ -94,30 +94,42 @@ function create_scene(){
 function create_lights(){
 
 	// Create hemisphere light
-	hemisphere_light = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.5);
+	hemisphere_light = new THREE.HemisphereLight(0xffffff, Colors.blue, 0.1);
 	scene.add(hemisphere_light);
 
 
-	// Create directional light
-	shadow_light = new THREE.DirectionalLight(0xffffff, 0.4);
-	
-	// Set light direction
-	shadow_light.position.set(150, 350, 350);
+	ambientLight = new THREE.AmbientLight(0xff907e, .2);
+	scene.add(ambientLight);
 
-	shadow_light.shadow.camera.left = -400;
-	shadow_light.shadow.camera.right = 400;
-	shadow_light.shadow.camera.bottom = -400;
-	shadow_light.shadow.camera.top = 400;
+	// Create directional light
+	shadow_light = new THREE.SpotLight(0xffffff, 0.2);
+	
+
+	// Set light direction
+	shadow_light.position.set(0, 800, 800);
+	
+	shadow_light.castShadow=true;
+	shadow_light.shadowDarkness = 0.5;
+
+
+
+	shadow_light.shadow.camera.left = -1000;
+	shadow_light.shadow.camera.right = 1000;
+	shadow_light.shadow.camera.bottom = -1000;
+	shadow_light.shadow.camera.top = 1000;
 	shadow_light.shadow.camera.near = 1;
-	shadow_light.shadow.camera.far = 1000;
+	shadow_light.shadow.camera.far = 2000;
 	shadow_light.shadow.mapSize.width = 2048;
 	shadow_light.shadow.mapSize.height = 2048;
+	shadow_light.shadowCameraVisible = true;
+
+	shadow_light.target.position.set( 0, 50, 100 );
 
 	scene.add(shadow_light);
 
 	// Shadow light helper
-	// var helper = new THREE.DirectionalLightHelper( shadow_light, 10 );
-	// scene.add( helper );
+	var helper = new THREE.SpotLightHelper( shadow_light, 50 );
+	scene.add( helper );
 
 }
 
@@ -145,7 +157,8 @@ function create_character(angle=0, world_angle=60, world_radius=600){
 	console.log(slope);
 
 	car.mesh.rotation.x = Math.atan(slope) + Math.PI/2;
-
+	car.mesh.castShadow=true;
+	car.mesh.receiveShadow = true;
 	scene.add(car.mesh);
 }
 
@@ -155,6 +168,7 @@ function create_environment(world_radius=600, world_width=400){
 
 	road = new Road(world_radius, world_width);
 	road.mesh.position.y = -world_radius;
+	road.mesh.receiveShadow = true;
 	scene.add(road.mesh);
 
 	sky = new Sky(60, 900, 800, 50);
