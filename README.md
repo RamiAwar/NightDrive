@@ -10,9 +10,9 @@ This will display the three images side by side if the images are not to wide.
 
 ## Features
 - Procedurally generated clouds
-- Car model built from basic geometry and elements. Complicated shapes are created using boolean operations on these primitives.
-- Lighting is attached to car, with position and orientation updated each frame.
-- Car can be animated easily
+- Basic car model built from primitive threejs elements. Complicated shapes are created using boolean operations on these primitives
+- Dynamic lighting which is attached to the car, with its position and orientation updated each frame
+- Easily animatable car
 
 ## Game?
 I'll probably turn this into a game after exploring some of the features of three.js that seem interesting to me.
