@@ -1,10 +1,12 @@
 # Exploratory ThreeJS Project
 
-Front           |  Back
-:-------------------------:|:-------------------------:
-![Progress Photo 1](https://github.com/RamiAwar/three-js-intro/raw/master/img/car_photo.JPG)
-  |  ![Progress Photo 2](https://github.com/RamiAwar/three-js-intro/raw/master/img/car_3.JPG)
 
+This will display the three images side by side if the images are not to wide.
+
+<p float="left">
+  <img src="https://github.com/RamiAwar/three-js-intro/raw/master/img/car_photo.JPG" width="100" />
+  <img src="https://github.com/RamiAwar/three-js-intro/raw/master/img/car_3.JPG" width="100" /> 
+</p>
 
 
 
