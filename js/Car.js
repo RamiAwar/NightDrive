@@ -2,7 +2,7 @@
 
 // Useful link: https://stemkoski.github.io/Three.js/Color-Explorer.html
 
-function Car(angle=40, scene){
+function Car(angle=40){
 
 	this.mesh = new THREE.Object3D();
 
@@ -35,6 +35,7 @@ function Car(angle=40, scene){
 
 	this.ground_offset = this.body_height/2 + this.wheel_radius/2;
 
+	this.lights = [];
 
 	var body_geometry = new THREE.BoxGeometry(this.body_width, this.body_height, this.body_length, 1, 1, 1);
 	var body_material = new THREE.MeshPhongMaterial({color: Colors.red, shading: THREE.FlatShading});
@@ -269,15 +270,15 @@ function Car(angle=40, scene){
 
 	// Spotlight Helper for visual aid while developing
 	// this.spotLightHelper = new THREE.SpotLightHelper( this.right_headlight );
-	// scene.add( this.spotLightHelper );
+	// this.lights.push( this.spotLightHelper );
 
 
 	// ADDING FINALIZED LIGHTS
-	scene.add(this.left_headlight);
-	scene.add(this.left_headlight_target);
+	this.lights.push(this.left_headlight);
+	this.lights.push(this.left_headlight_target);
 	
-	scene.add(this.right_headlight);
-	scene.add(this.right_headlight_target);
+	this.lights.push(this.right_headlight);
+	this.lights.push(this.right_headlight_target);
 
 
 	// ADDING FINALIZED MESHES

@@ -124,7 +124,12 @@ function create_lights(){
 
 function create_character(angle=0, world_angle=60, world_radius=600){
 
-	car = new Car(angle, scene);
+	car = new Car(angle);
+
+	// Add car lights to scene
+	for(var i = 0; i < car.lights.length; i++){
+		scene.add(car.lights[i]);
+	}
 
 	var car_scale = 1;
 	var curve_offset = 1;
