@@ -17,3 +17,7 @@ var Colors = {
 function deg2rad(angle){
 	return angle*Math.PI/180;
 }
+
+function map(value, min_value, max_value, min_target, max_target){
+	return min_target + ((Math.max(Math.min(value, max_value), min_value) - min_value)/(max_value-min_value))*(max_target-min_target);
+}

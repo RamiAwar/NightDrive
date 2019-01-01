@@ -13,8 +13,12 @@ function init(){
 	create_character(0);
 	create_environment();
 
+	// Input handler
+	document.addEventListener('mousemove', input_handler, false);
+
 	// start game loop
 	game_loop();
+
 
 	
 }
@@ -23,7 +27,7 @@ function init(){
 var scene, field_of_view, aspect_ratio, near_plane, far_plane, HEIGHT, WIDTH, renderer, container;
 var hemisphere_light, shadow_light;
 var road, sky;
-
+var mouse = {x:0, y:0};
 
 
 function create_scene(){
@@ -114,9 +118,6 @@ function create_lights(){
 	// Shadow light helper
 	// var helper = new THREE.DirectionalLightHelper( shadow_light, 10 );
 	// scene.add( helper );
-	
-
-
 
 }
 
@@ -148,6 +149,8 @@ function create_character(angle=0, world_angle=60, world_radius=600){
 	scene.add(car.mesh);
 }
 
+
+
 function create_environment(world_radius=600, world_width=400){
 
 	road = new Road(world_radius, world_width);
@@ -167,7 +170,10 @@ function create_environment(world_radius=600, world_width=400){
 	// var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
 	// var cube = new THREE.Mesh(geometry, material);
 	// scene.add(cube);
+
 }
+
+
 
 function game_loop(){
 
@@ -176,14 +182,31 @@ function game_loop(){
 	road.mesh.rotation.x += 0.01;
 	sky.mesh.rotation.x += 0.003;
 
-	
-
+	// TODO: Combine these in a smart way (minimizing coupling)
 	car.update();
+	car_movement();
 
 	renderer.render(scene, camera);
 }
 
+function input_handler(event){
 
+	// normalize mouse input value
+	var x = (event.clientX/WIDTH)*2 - 1; // value between -1 and 1
+	var y = (event.clientY/HEIGHT)*2 - 1;// value between -1 and 1
+
+	mouse = {x:x, y:y};
+
+}
+
+function car_movement(){
+
+	var target_x = map(mouse.x, -1, 1, -100, 100);
+	var target_y = map(mouse.y, -1, 1, 25, 175);
+
+	car.mesh.position.x = target_x;
+
+}
 
 
 
