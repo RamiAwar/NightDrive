@@ -4,8 +4,8 @@
 This will display the three images side by side if the images are not to wide.
 
 <p float="left">
-  <img src="https://github.com/RamiAwar/three-js-intro/raw/master/img/car_photo.JPG" width="50%" />
-  <img src="https://github.com/RamiAwar/three-js-intro/raw/master/img/car_3.JPG" width="40%" /> 
+  <img src="https://github.com/RamiAwar/three-js-intro/raw/master/img/car_photo.JPG" width="48%" />
+  <img src="https://github.com/RamiAwar/three-js-intro/raw/master/img/car_3.JPG" width="42%" /> 
 </p>
 
 
