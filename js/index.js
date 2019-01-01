@@ -71,6 +71,7 @@ function create_scene(){
 	container = document.getElementById('world');
 	container.appendChild(renderer.domElement);
 
+
 	// Change renderer and camera properties upon resize to prevent unwanted scaling effects
 	window.addEventListener('resize', function(){
 		HEIGHT = window.innerHeight;
