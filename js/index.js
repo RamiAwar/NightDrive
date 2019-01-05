@@ -67,8 +67,8 @@ function create_scene(){
 	);
 
 	camera.position.x = 0;
-	camera.position.z = 400;
-	camera.position.y = 0;
+	camera.position.z = 600;
+	camera.position.y = 30;
 
 	renderer = new THREE.WebGLRenderer({
 		// Allow transparency to show gradient css background
@@ -201,15 +201,14 @@ function create_environment(world_radius=600, world_width=400){
 	sky.mesh.position.y = -world_radius;
 	scene.add(sky.mesh);
 
-	// cloud = new Cloud();
-	// cloud.mesh.position.y = 200;
-	// scene.add(cloud.mesh);
 
-	// Debugger cube
-	// var geometry = new THREE.BoxGeometry(1, 1, 1);
-	// var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-	// var cube = new THREE.Mesh(geometry, material);
-	// scene.add(cube);
+	// tree = new Tree(0,0,0);
+	// tree.mesh.position.x = 0;
+	// tree.mesh.position.y = 30;
+	// tree.mesh.position.z = 0;
+	// tree.mesh.rotation.y = Math.PI/6;
+	// scene.add(tree.mesh);
+
 
 }
 
@@ -219,7 +218,9 @@ function game_loop(){
 
 	requestAnimationFrame(game_loop);
 
-	road.mesh.rotation.x += 0.01;
+	
+	road.update();
+	
 	sky.mesh.rotation.x += 0.003;
 
 	// TODO: Combine these in a smart way (minimizing coupling)
@@ -231,9 +232,9 @@ function game_loop(){
 
 function input_handler(event){
 
-	context.resume().then(() => {
-	    console.log("ok")
-	});
+	// context.resume().then(() => {
+	//     console.log("ok")
+	// });
 
 	// normalize mouse input value
 	var x = (event.clientX/WIDTH)*2 - 1; // value between -1 and 1
@@ -246,18 +247,20 @@ function input_handler(event){
 
 function car_movement(){
 
-	var target_x = map(mouse.x, -1, 1, -100, 100);
+	var speed = 0.03;
+
+	var target_x = map(mouse.x, -1, 1, -150, 150);
 	var target_y = map(mouse.y, -1, 1, 25, 175);
 
 	var error = target_x - car.mesh.position.x;
 
-	car.mesh.position.x += error*0.05;
+	car.mesh.position.x += error*speed;
 
 
-	car.wheel_mesh_array[2].rotation.y = -error*error*error*0.000001 + Math.PI;
-	car.wheel_mesh_array[3].rotation.y = -error*error*error*0.000001;
+	car.wheel_mesh_array[2].rotation.y = -error*error*error*0.0000003 + Math.PI;
+	car.wheel_mesh_array[3].rotation.y = -error*error*error*0.0000003;
 	
-	car.mesh.rotation.y = -(target_x - car.mesh.position.x)*0.002;
+	car.set_angle(-(target_x - car.mesh.position.x)*0.002);
 	
 }
 

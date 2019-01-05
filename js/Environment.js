@@ -1,22 +1,5 @@
 // Contains all elements of the environment (Clouds, sky, road)
 
-function Road(radius=600, height=800, radial_segments=100, height_segments=10){
-
-	var geometry = new THREE.CylinderGeometry( radius, radius, height, radial_segments, height_segments );	
-
-	geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
-	geometry.applyMatrix(new THREE.Matrix4().makeRotationY(-Math.PI/2));
-
-	var material = new THREE.MeshPhongMaterial({
-		color: Colors.blue,
-		transparent: false
-	});
-
-	this.mesh = new THREE.Mesh(geometry, material);
-
-	this.mesh.receiveShadow = true;
-}
-
 function Cloud(min_clouds=5, n_cloud_spread=3){
 
 	// Create empty container to hold parts of cloud
@@ -94,4 +77,155 @@ function Sky(n_clouds=20, cloud_height=1000, horizontal_spread=800, vertical_spr
 		c.mesh.castShadow = true;
 		this.mesh.add(c.mesh);
 	}
+}
+
+function Tree(){
+
+	this.mesh = new THREE.Object3D();
+
+	var trunk_geometry = new THREE.ConeGeometry(10, 50, 5, 6);
+	var trunk_material = new THREE.MeshPhongMaterial({color: Colors.brown, shading:THREE.FlatShading});
+	var trunk = new THREE.Mesh(trunk_geometry, trunk_material);
+
+	trunk.castShadow=true;
+	trunk.receiveShadow=false;
+	trunk.position.y = -5;
+
+	this.mesh.add(trunk);
+
+	var radius = 35;
+	var height = 50;
+
+	var radial_segments = 6;
+	var height_segments = 5;
+
+	var n_layers = 4 + Math.floor(Math.floor(Math.random()*2));
+	var random_color = Colors.green;
+
+	for(var i = 1; i < n_layers; i++){
+		
+		var instance_radius = -7*i + 40;
+		var instance_height = -4*i + 40;
+
+		if(Math.random() < i*0.2){
+			random_color = Colors.white;
+		}
+
+		var cone_geometry = new THREE.ConeGeometry(instance_radius, instance_height, radial_segments, height_segments);
+		var cone_material = new THREE.MeshPhongMaterial({color: random_color, shading:THREE.FlatShading});
+
+		var cone = new THREE.Mesh(cone_geometry, cone_material);
+
+		cone.castShadow = true;
+		cone.receiveShadow = true;
+
+		cone.position.y = 14*(i-1);
+		
+		this.mesh.add(cone);
+
+	}
+
+}
+
+
+function Road(radius=600, height=800, radial_segments=100, height_segments=10, num_obstacles=20){
+
+	this.mesh = new THREE.Object3D();
+	this.angular_speed = 0.011;
+	this.ground_offset = 25;
+
+	var geometry = new THREE.CylinderGeometry( radius, radius, height, radial_segments, height_segments );	
+
+	geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
+	geometry.applyMatrix(new THREE.Matrix4().makeRotationY(-Math.PI/2));
+
+	var material = new THREE.MeshPhongMaterial({
+		color: Colors.blue,
+		transparent: false
+	});
+
+	this.mesh.add(new THREE.Mesh(geometry, material));
+	this.mesh.receiveShadow = true;
+
+	this.obstacles = [];
+	this.num_obstacles = num_obstacles;
+
+	for(var i = 0; i < this.num_obstacles; i++){
+
+		var tree = new Tree();
+		var angle = i*Math.PI*2/this.num_obstacles;
+		
+
+		tree.mesh.position.y = (radius + this.ground_offset)*Math.cos(angle); 
+		tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(angle);
+		tree.mesh.position.x = Math.random()*300 - 150; 
+		tree.mesh.rotation.x = angle;
+
+		var obstacle = {
+			tree: tree,
+			initial_angle: angle,
+			angle: angle,
+			global_x: tree.mesh.position.x,
+			global_y: tree.mesh.position.y,
+			global_z: tree.mesh.position.z,
+			old: true
+		}
+
+		this.obstacles.push(obstacle);
+	}
+
+
+	for(var j = 0; j < this.obstacles.length; j++){
+		this.mesh.add(this.obstacles[j].tree.mesh);
+	}
+
+	this.set_speed = function(speed){
+		this.angular_speed = speed;
+	}
+
+	this.update = function(){
+
+		// Rotate surface 
+		road.mesh.rotation.x += this.angular_speed;
+ 
+		// Only spawn new obstacles in a certain window (at a certain angle)
+		
+		// Dead zone
+		for(var i = 0; i < this.obstacles.length; i++){
+
+			if(!this.obstacles[i].old && this.obstacles[i].global_y > -200 ) this.obstacles[i].old = true;
+
+			// Update global position
+			this.obstacles[i].angle += this.angular_speed;
+			this.obstacles[i].global_y = (radius + this.ground_offset)*Math.cos(this.obstacles[i].angle);
+			this.obstacles[i].global_z = (radius + this.ground_offset)*Math.sin(this.obstacles[i].angle);
+
+			// Check if obstacle is in dead zone
+			var obstacle = this.obstacles[i];
+			
+			if(obstacle.global_y < -300 && obstacle.old){
+
+				this.mesh.remove(obstacle.tree.mesh);
+
+				// Create another tree at the initial angle
+				var tree = new Tree();
+
+				tree.mesh.position.y = (radius + this.ground_offset)*Math.cos(obstacle.initial_angle); 
+				tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(obstacle.initial_angle);
+				tree.mesh.position.x = Math.random()*300 - 150; 
+				tree.mesh.rotation.x = obstacle.initial_angle;
+
+				this.obstacles[i].tree = tree;
+				this.obstacles[i].old = false;
+
+				this.mesh.add(tree.mesh);
+
+			}
+
+		}
+		
+	}
+	
+
+
 }

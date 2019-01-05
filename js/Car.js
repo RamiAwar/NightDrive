@@ -234,8 +234,8 @@ function Car(angle=40){
 	//===================
 
 	// Headlight targets
-	this.left_headlight_target = new THREE.Mesh(new THREE.BoxBufferGeometry(2,2,2), new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true, opacity:0} ));
-	this.right_headlight_target = new THREE.Mesh(new THREE.BoxBufferGeometry(2,2,2), new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent: true, opacity:0} ));
+	this.left_headlight_target = new THREE.Mesh(new THREE.BoxBufferGeometry(2,2,2), new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true, opacity:1} ));
+	this.right_headlight_target = new THREE.Mesh(new THREE.BoxBufferGeometry(2,2,2), new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent: true, opacity:1} ));
 
 	this.left_headlight_target.position.x = this.left_headlight_mesh.position.x;
 	this.left_headlight_target.position.z = this.left_headlight_mesh.position.z - this.body_length/2;
@@ -255,7 +255,7 @@ function Car(angle=40){
 	this.left_headlight.shadow.mapSize.width = 256;
 	this.left_headlight.shadow.mapSize.height = 256;
 	this.left_headlight.shadow.camera.near = 1;
-	this.left_headlight.shadow.camera.far = 50;
+	this.left_headlight.shadow.camera.far = 3000;
 	this.left_headlight.shadow.camera.fov = 30;
 
 	this.right_headlight.angle = Math.PI/12;
@@ -264,7 +264,7 @@ function Car(angle=40){
 	this.right_headlight.shadow.mapSize.width = 256;
 	this.right_headlight.shadow.mapSize.height = 256;
 	this.right_headlight.shadow.camera.near = 1;
-	this.right_headlight.shadow.camera.far = 50;
+	this.right_headlight.shadow.camera.far = 3000;
 	this.right_headlight.shadow.camera.fov = 30;
 
 
@@ -314,29 +314,27 @@ function Car(angle=40){
 	// Update function to be called once per frame
 	this.update = function(){
 
-		this.mesh.rotation.y = deg2rad(this.angle);
-
-		// Back wheel rotation animation
-		// this.wheel_mesh_array[0].rotation.x -= 0.08;
-		// this.wheel_mesh_array[1].rotation.x -= 0.08;	
-
-		// Front wheel rotation animation
-		// this.wheel_mesh_array[2].rotation.x -= 0.08;
-		// this.wheel_mesh_array[3].rotation.x -= 0.08;	
-
+		this.mesh.rotation.y = this.angle;
 
 		// Headlight position update
 		// this.spotLightHelper.update(); 
+
+		var target_distance = this.body_length/2;
+
 		this.left_headlight_target.position.setFromMatrixPosition(this.left_headlight_mesh.matrixWorld);
-		this.left_headlight_target.position.z = this.left_headlight_target.position.z - this.body_length/2;
-		this.left_headlight_target.position.y = this.left_headlight_mesh.position.y - 3*this.body_height;
+		this.left_headlight_target.position.y = this.left_headlight_mesh.position.y - 4*this.body_height;
+		this.left_headlight_target.position.x -= target_distance*Math.sin(this.angle);
+		this.left_headlight_target.position.z -= target_distance + target_distance*Math.cos(this.angle);
 
 		this.right_headlight_target.position.setFromMatrixPosition(this.right_headlight_mesh.matrixWorld);
-		this.right_headlight_target.position.z = this.right_headlight_target.position.z - this.body_length/2;
-		this.right_headlight_target.position.y = this.right_headlight_mesh.position.y - 3*this.body_height;
+		this.right_headlight_target.position.y = this.right_headlight_mesh.position.y - 4*this.body_height;
+		this.right_headlight_target.position.x -= target_distance*Math.sin(this.angle);
+		this.right_headlight_target.position.z -= target_distance + target_distance*Math.cos(this.angle);
 
 		this.left_headlight.position.setFromMatrixPosition(this.left_headlight_mesh.matrixWorld);
+		this.left_headlight.position.z -= 10;
 		this.right_headlight.position.setFromMatrixPosition(this.right_headlight_mesh.matrixWorld);
+		this.right_headlight.position.z -= 10;
 
 		this.left_headlight.target = this.left_headlight_target;
 		this.right_headlight.target = this.right_headlight_target;
