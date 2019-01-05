@@ -218,14 +218,23 @@ function game_loop(){
 
 	requestAnimationFrame(game_loop);
 
+	var mesh_list = [];
+	for(var i = 1; i <= road.obstacles.length; i++){
+		mesh_list.push(road.mesh.children[i].children[0]);
+	}
 	
-	road.update();
-	
-	sky.mesh.rotation.x += 0.003;
+	var collided = check_collision(car.mesh.children[0], mesh_list);
+	if(true){
 
-	// TODO: Combine these in a smart way (minimizing coupling)
-	car.update();
-	car_movement();
+	
+		road.update();
+
+		sky.mesh.rotation.x += 0.003;
+
+		// TODO: Combine these in a smart way (minimizing coupling)
+		car.update();
+		car_movement();
+	}	
 
 	renderer.render(scene, camera);
 }
@@ -265,7 +274,24 @@ function car_movement(){
 }
 
 
+function check_collision(Player, collidableMeshList){
 
+	// var Player = scene.getObjectByName('car');
+	var originPoint = car.mesh.position.clone();
+	for (var vertexIndex = 0; vertexIndex < Player.geometry.vertices.length; vertexIndex++){       
+	    
+	    var localVertex = Player.geometry.vertices[vertexIndex].clone();
+        var globalVertex = localVertex.applyMatrix4(Player.matrix);
+        var directionVector = globalVertex.sub(Player.position);
+        var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
+        var collisionResults = ray.intersectObjects(collidableMeshList);
+        if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
+            console.log(collisionResults);
+            collisionResults[0].object.rotation.x -= Math.PI/2;
+            return true;
+        }
+	}
+}
 
 
 
