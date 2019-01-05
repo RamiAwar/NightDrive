@@ -159,6 +159,7 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 		tree.mesh.position.y = (radius + this.ground_offset)*Math.cos(angle); 
 		tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(angle);
 		tree.mesh.position.x = Math.random()*300 - 150; 
+		
 		tree.mesh.rotation.x = angle;
 
 		var obstacle = {
@@ -168,7 +169,8 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 			global_x: tree.mesh.position.x,
 			global_y: tree.mesh.position.y,
 			global_z: tree.mesh.position.z,
-			old: true
+			old: true,
+			hit: false
 		}
 
 		this.obstacles.push(obstacle);
@@ -181,6 +183,10 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 
 	this.set_speed = function(speed){
 		this.angular_speed = speed;
+	}
+
+	this.impulse = function(strength){
+		this.mesh.rotation.x -= strength;
 	}
 
 	this.update = function(){
@@ -200,6 +206,16 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 			this.obstacles[i].global_y = (radius + this.ground_offset)*Math.cos(this.obstacles[i].angle);
 			this.obstacles[i].global_z = (radius + this.ground_offset)*Math.sin(this.obstacles[i].angle);
 
+			// Check if obstacle is collided with
+			if(this.obstacles[i].hit){
+				
+				this.obstacles[i].tree.mesh.rotation.x += 0.015*(this.obstacles[i].tree.mesh.rotation.x - (this.obstacles[i].initial_angle + Math.PI/3));
+
+
+			}else{
+				this.obstacles[i].tree.mesh.rotation.x = this.obstacles[i].initial_angle;
+			}
+
 			// Check if obstacle is in dead zone
 			var obstacle = this.obstacles[i];
 			
@@ -213,10 +229,10 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 				tree.mesh.position.y = (radius + this.ground_offset)*Math.cos(obstacle.initial_angle); 
 				tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(obstacle.initial_angle);
 				tree.mesh.position.x = Math.random()*300 - 150; 
-				tree.mesh.rotation.x = obstacle.initial_angle;
 
 				this.obstacles[i].tree = tree;
 				this.obstacles[i].old = false;
+				this.obstacles[i].hit = false;
 
 				this.mesh.add(tree.mesh);
 

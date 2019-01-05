@@ -197,6 +197,8 @@ function create_environment(world_radius=600, world_width=400){
 	road.mesh.receiveShadow = true;
 	scene.add(road.mesh);
 
+	road.set_speed(0.005);
+
 	sky = new Sky(60, 900, 800, 50);
 	sky.mesh.position.y = -world_radius;
 	scene.add(sky.mesh);
@@ -217,13 +219,8 @@ function create_environment(world_radius=600, world_width=400){
 function game_loop(){
 
 	requestAnimationFrame(game_loop);
-
-	var mesh_list = [];
-	for(var i = 1; i <= road.obstacles.length; i++){
-		mesh_list.push(road.mesh.children[i].children[0]);
-	}
 	
-	var collided = check_collision(car.mesh.children[0], mesh_list);
+	var collided = check_collision(car.mesh.children[0], road);
 	if(true){
 
 	
@@ -273,8 +270,12 @@ function car_movement(){
 	
 }
 
+function make_transparent(object, opacity){
+	object.material.transparent = true;
+	object.material.opacity = opacity;
+}
 
-function check_collision(Player, collidableMeshList){
+function check_collision(Player){
 
 	// var Player = scene.getObjectByName('car');
 	var originPoint = car.mesh.position.clone();
@@ -284,12 +285,25 @@ function check_collision(Player, collidableMeshList){
         var globalVertex = localVertex.applyMatrix4(Player.matrix);
         var directionVector = globalVertex.sub(Player.position);
         var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
-        var collisionResults = ray.intersectObjects(collidableMeshList);
-        if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
-            console.log(collisionResults);
-            collisionResults[0].object.rotation.x -= Math.PI/2;
-            return true;
-        }
+
+	    for(var tree_index = 1; tree_index < road.obstacles.length; tree_index++){
+
+	    	var collision_results = ray.intersectObject(road.obstacles[tree_index].tree.mesh.children[0])
+	    	if (collision_results.length > 0 && collision_results[0].distance < directionVector.length()) {
+            	
+            	if(!road.obstacles[tree_index].hit){
+	            	road.obstacles[tree_index].hit = true;
+	            	var obj = road.obstacles[tree_index].tree.mesh;
+					for(var j = 0; j < obj.children.length; j++){
+						make_transparent(obj.children[j], 0.4);
+					}	        	
+
+					// Affect road speed
+					road.impulse(0.1);
+				}
+	        }
+	    }
+
 	}
 }
 

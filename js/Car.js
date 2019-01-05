@@ -246,10 +246,12 @@ function Car(angle=40){
 	this.right_headlight_target.position.y = this.right_headlight_mesh.position.y - 2*this.body_height;
 
 	// Adding spotlights
+	var light_angle = Math.PI/8;
+
 	this.left_headlight = new THREE.SpotLight(0xffffff);
 	this.right_headlight = new THREE.SpotLight(0xffffff);
 
-	this.left_headlight.angle = Math.PI/12;
+	this.left_headlight.angle = light_angle;
 
 	this.left_headlight.castShadow = true;
 	this.left_headlight.shadow.mapSize.width = 256;
@@ -258,7 +260,7 @@ function Car(angle=40){
 	this.left_headlight.shadow.camera.far = 3000;
 	this.left_headlight.shadow.camera.fov = 30;
 
-	this.right_headlight.angle = Math.PI/12;
+	this.right_headlight.angle = light_angle;
 
 	this.right_headlight.castShadow = true;
 	this.right_headlight.shadow.mapSize.width = 256;
