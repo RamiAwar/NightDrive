@@ -2,7 +2,7 @@
 
 // Useful link: https://stemkoski.github.io/Three.js/Color-Explorer.html
 
-function Car(angle=40){
+function Car(angle=0){
 
 	this.mesh = new THREE.Object3D();
 
@@ -234,8 +234,8 @@ function Car(angle=40){
 	//===================
 
 	// Headlight targets
-	this.left_headlight_target = new THREE.Mesh(new THREE.BoxBufferGeometry(2,2,2), new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true, opacity:1} ));
-	this.right_headlight_target = new THREE.Mesh(new THREE.BoxBufferGeometry(2,2,2), new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent: true, opacity:1} ));
+	this.left_headlight_target = new THREE.Mesh(new THREE.BoxBufferGeometry(2,2,2), new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent:true, opacity:0} ));
+	this.right_headlight_target = new THREE.Mesh(new THREE.BoxBufferGeometry(2,2,2), new THREE.MeshBasicMaterial( {color: 0x00ff00, transparent: true, opacity:0} ));
 
 	this.left_headlight_target.position.x = this.left_headlight_mesh.position.x;
 	this.left_headlight_target.position.z = this.left_headlight_mesh.position.z - this.body_length/2;

@@ -1,31 +1,32 @@
-
-
-
-
-
+// Entry point
+window.addEventListener('load', init, false);
 
 
 // Global variables
-var scene, field_of_view, aspect_ratio, near_plane, far_plane, HEIGHT, WIDTH, renderer, container;
-var hemisphere_light, shadow_light;
+var SCENE;
+
 var road, sky;
 var mouse = {x:0, y:0};
 var context;
 
+var world_angle=60, 
+ 	world_radius=600;
 
-window.addEventListener('load', init, false);
 
 
 function init(){
 
+	// Initialize audio
 	context = new AudioContext();
-	
 
-	// set up scene, camera, renderer
-	create_scene();
+	// set up SCENE.scene, camera, SCENE.renderer
+	SCENE = create_scene('world', true);
+
+	document.addEventListener('click', context.resume().then(() => {console.log("Audio context resumed.")}));
+
 
 	// set up lighting
-	create_lights();
+	create_lights(SCENE.scene);
 
 	// add objects
 	create_character(0);
@@ -34,128 +35,30 @@ function init(){
 	// Input handler
 	document.addEventListener('mousemove', input_handler, false);
 
+	
+
 	// start game loop
 	game_loop();
-
-
 	
 }
 
 
 
 
-function create_scene(){
-
-	HEIGHT = window.innerHeight;
-	WIDTH = window.innerWidth;
-
-	scene = new THREE.Scene();
-
-	// Add fog effect
-	scene.fog = new THREE.Fog(Colors.fog, 100, 1100);
-
-	// Create camera
-	aspect_ratio = WIDTH/HEIGHT;
-	field_of_view = 60; // degrees
-	near_plane = 1;
-	far_plane = 10000;
-	camera = new THREE.PerspectiveCamera(
-		field_of_view, 
-		aspect_ratio, 
-		near_plane, 
-		far_plane
-	);
-
-	camera.position.x = 0;
-	camera.position.z = 600;
-	camera.position.y = 30;
-
-	renderer = new THREE.WebGLRenderer({
-		// Allow transparency to show gradient css background
-		alpha:true,
-
-		// Enable anti-aliasing
-		antialias: true 
-	});
-
-	// Fill entire screen
-	renderer.setSize(WIDTH, HEIGHT);
-
-	// Enable shadow rendering
-	renderer.shadowMap.enabled = true;
-	renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
-
-	// Attach variable to DOM element
-	container = document.getElementById('world');
-	container.appendChild(renderer.domElement);
-
-
-	// Change renderer and camera properties upon resize to prevent unwanted scaling effects
-	window.addEventListener('resize', function(){
-		HEIGHT = window.innerHeight;
-		WIDTH = window.innerWidth;
-		renderer.setSize(WIDTH, HEIGHT);
-		camera.aspect = WIDTH / HEIGHT;
-		camera.updateProjectionMatrix();
-	}, false);
-
-	controls = new THREE.OrbitControls(camera, renderer.domElement);
-	camera.lookAt(0, 0, -200);
-
-}
-
-
-function create_lights(){
-
-	// Create hemisphere light
-	hemisphere_light = new THREE.HemisphereLight(0xffffff, Colors.blue, 0.1);
-	scene.add(hemisphere_light);
-
-
-	ambientLight = new THREE.AmbientLight(0xcc907e, .4);
-	scene.add(ambientLight);
-
-	// Create spotlight
-	shadow_light = new THREE.SpotLight(0xffffff, 0.2);
-	
-
-	// Set light direction
-	shadow_light.position.set(0, 800, 800);
-	
-	shadow_light.castShadow=true;
-	shadow_light.shadowDarkness = 0.5;
 
 
 
-	shadow_light.shadow.camera.left = -1000;
-	shadow_light.shadow.camera.right = 1000;
-	shadow_light.shadow.camera.bottom = -1000;
-	shadow_light.shadow.camera.top = 1000;
-	shadow_light.shadow.camera.near = 1;
-	shadow_light.shadow.camera.far = 2000;
-	shadow_light.shadow.mapSize.width = 2048;
-	shadow_light.shadow.mapSize.height = 2048;
-	shadow_light.shadowCameraVisible = true;
-
-	shadow_light.target.position.set( 0, 50, 100 );
-
-	scene.add(shadow_light);
-
-	// Shadow light helper
-	// var helper = new THREE.SpotLightHelper( shadow_light, 50 );
-	// scene.add( helper );
-
-}
 
 
 
-function create_character(angle=0, world_angle=60, world_radius=600){
 
-	car = new Car(angle);
+function create_character(){
 
-	// Add car lights to scene
+	car = new Car();
+
+	// Add car lights to SCENE.scene
 	for(var i = 0; i < car.lights.length; i++){
-		scene.add(car.lights[i]);
+		SCENE.scene.add(car.lights[i]);
 	}
 
 	var car_scale = 1;
@@ -168,40 +71,30 @@ function create_character(angle=0, world_angle=60, world_radius=600){
 	car.mesh.position.y = Math.sin(deg2rad(world_angle))*(world_radius + car.ground_offset - curve_offset) - 600;
 
 	var slope = -(car.mesh.position.y + 600)/car.mesh.position.z;
-	console.log(slope);
-
 	car.mesh.rotation.x = Math.atan(slope) + Math.PI/2;
 	car.mesh.castShadow=true;
 	car.mesh.receiveShadow = true;
-	scene.add(car.mesh);
 
-	var listener = new THREE.AudioListener();
-	camera.add( listener );
+	SCENE.scene.add(car.mesh);
 
-	// var sound = new THREE.Audio(listener);
-	// var audioLoader = new THREE.AudioLoader();
-	// audioLoader.load( 'sounds/engine_loop.ogg', function( buffer ) {
-	// 	sound.setBuffer( buffer );
-	// 	sound.setLoop(true);
-	// 	sound.setVolume(0.2);
-	// 	sound.play();
-	// });
+	SCENE.sfx.engine_loop_sfx.play();
+
 }
 
 
 
 function create_environment(world_radius=600, world_width=400){
 
-	road = new Road(world_radius, world_width);
+	road = new Road(true, world_radius, world_width);
 	road.mesh.position.y = -world_radius;
 	road.mesh.receiveShadow = true;
-	scene.add(road.mesh);
+	SCENE.scene.add(road.mesh);
 
 	road.set_speed(0.005);
 
-	sky = new Sky(60, 900, 800, 50);
+	sky = new Sky(60, 1000, 800, 50);
 	sky.mesh.position.y = -world_radius;
-	scene.add(sky.mesh);
+	SCENE.scene.add(sky.mesh);
 
 
 	// tree = new Tree(0,0,0);
@@ -209,7 +102,7 @@ function create_environment(world_radius=600, world_width=400){
 	// tree.mesh.position.y = 30;
 	// tree.mesh.position.z = 0;
 	// tree.mesh.rotation.y = Math.PI/6;
-	// scene.add(tree.mesh);
+	// SCENE.scene.add(tree.mesh);
 
 
 }
@@ -233,18 +126,14 @@ function game_loop(){
 		car_movement();
 	}	
 
-	renderer.render(scene, camera);
+	SCENE.renderer.render(SCENE.scene, camera);
 }
 
 function input_handler(event){
 
-	// context.resume().then(() => {
-	//     console.log("ok")
-	// });
-
 	// normalize mouse input value
-	var x = (event.clientX/WIDTH)*2 - 1; // value between -1 and 1
-	var y = (event.clientY/HEIGHT)*2 - 1;// value between -1 and 1
+	var x = (event.clientX/SCENE.WIDTH)*2 - 1; // value between -1 and 1
+	var y = (event.clientY/SCENE.HEIGHT)*2 - 1;// value between -1 and 1
 
 	mouse = {x:x, y:y};
 
@@ -262,6 +151,15 @@ function car_movement(){
 
 	car.mesh.position.x += error*speed;
 
+	var slope = -(car.mesh.position.y + 600)/car.mesh.position.z;
+
+	var target_angle = Math.atan(slope) + Math.PI/2;
+	car.mesh.rotation.x -= 0.1*(car.mesh.rotation.x - target_angle);
+
+
+	car.mesh.position.z -= 0.04*(car.mesh.position.z - Math.cos(deg2rad(world_angle))*(world_radius + car.ground_offset - 1));
+	car.mesh.position.y -= 0.04*(car.mesh.position.y - Math.sin(deg2rad(world_angle))*(world_radius + car.ground_offset - 1) + 600);
+
 
 	car.wheel_mesh_array[2].rotation.y = -error*error*error*0.0000003 + Math.PI;
 	car.wheel_mesh_array[3].rotation.y = -error*error*error*0.0000003;
@@ -277,7 +175,10 @@ function make_transparent(object, opacity){
 
 function check_collision(Player){
 
-	// var Player = scene.getObjectByName('car');
+	// TODO: Improve collision system such as to have custom collision effects.
+	//  depending on which side of the car the collision occured
+
+	// var Player = SCENE.scene.getObjectByName('car');
 	var originPoint = car.mesh.position.clone();
 	for (var vertexIndex = 0; vertexIndex < Player.geometry.vertices.length; vertexIndex++){       
 	    
@@ -288,18 +189,26 @@ function check_collision(Player){
 
 	    for(var tree_index = 1; tree_index < road.obstacles.length; tree_index++){
 
-	    	var collision_results = ray.intersectObject(road.obstacles[tree_index].tree.mesh.children[0])
+	    	var collision_results = ray.intersectObject(road.obstacles[tree_index].tree.mesh.children[0]);
 	    	if (collision_results.length > 0 && collision_results[0].distance < directionVector.length()) {
             	
+
+
             	if(!road.obstacles[tree_index].hit){
+	            
+            		SCENE.sfx.hit_sfx.play();
+
+            		car.mesh.rotation.x += Math.PI/14;
+            		car.mesh.position.z += 60;
+            		car.mesh.position.y -= 10;
+
 	            	road.obstacles[tree_index].hit = true;
 	            	var obj = road.obstacles[tree_index].tree.mesh;
 					for(var j = 0; j < obj.children.length; j++){
 						make_transparent(obj.children[j], 0.4);
 					}	        	
 
-					// Affect road speed
-					road.impulse(0.1);
+					
 				}
 	        }
 	    }

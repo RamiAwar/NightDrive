@@ -128,11 +128,12 @@ function Tree(){
 }
 
 
-function Road(radius=600, height=800, radial_segments=100, height_segments=10, num_obstacles=20){
+function Road(spawn=false, radius=600, height=800, radial_segments=100, height_segments=10, num_obstacles=20){
 
 	this.mesh = new THREE.Object3D();
 	this.angular_speed = 0.011;
 	this.ground_offset = 25;
+	this.spawn = spawn;
 
 	var geometry = new THREE.CylinderGeometry( radius, radius, height, radial_segments, height_segments );	
 
@@ -159,6 +160,7 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 		tree.mesh.position.y = (radius + this.ground_offset)*Math.cos(angle); 
 		tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(angle);
 		tree.mesh.position.x = Math.random()*300 - 150; 
+		tree.mesh.rotation.y = Math.random()*Math.PI;
 		
 		tree.mesh.rotation.x = angle;
 
@@ -176,11 +178,7 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 		this.obstacles.push(obstacle);
 	}
 
-
-	for(var j = 0; j < this.obstacles.length; j++){
-		this.mesh.add(this.obstacles[j].tree.mesh);
-	}
-
+	// Class methods
 	this.set_speed = function(speed){
 		this.angular_speed = speed;
 	}
@@ -197,6 +195,7 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 		// Only spawn new obstacles in a certain window (at a certain angle)
 		
 		// Dead zone
+		
 		for(var i = 0; i < this.obstacles.length; i++){
 
 			if(!this.obstacles[i].old && this.obstacles[i].global_y > -200 ) this.obstacles[i].old = true;
@@ -209,8 +208,7 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 			// Check if obstacle is collided with
 			if(this.obstacles[i].hit){
 				
-				this.obstacles[i].tree.mesh.rotation.x += 0.015*(this.obstacles[i].tree.mesh.rotation.x - (this.obstacles[i].initial_angle + Math.PI/3));
-
+				this.obstacles[i].tree.mesh.rotation.x -= 0.05*(this.obstacles[i].tree.mesh.rotation.x - (this.obstacles[i].initial_angle - Math.PI/2));
 
 			}else{
 				this.obstacles[i].tree.mesh.rotation.x = this.obstacles[i].initial_angle;
@@ -223,18 +221,21 @@ function Road(radius=600, height=800, radial_segments=100, height_segments=10, n
 
 				this.mesh.remove(obstacle.tree.mesh);
 
-				// Create another tree at the initial angle
-				var tree = new Tree();
+				if(this.spawn == true){
+					// Create another tree at the initial angle
+					var tree = new Tree();
 
-				tree.mesh.position.y = (radius + this.ground_offset)*Math.cos(obstacle.initial_angle); 
-				tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(obstacle.initial_angle);
-				tree.mesh.position.x = Math.random()*300 - 150; 
+					tree.mesh.position.y = (radius + this.ground_offset)*Math.cos(obstacle.initial_angle); 
+					tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(obstacle.initial_angle);
+					tree.mesh.position.x = Math.random()*300 - 150; 
+					tree.mesh.rotation.y = Math.random()*Math.PI;
+					
+					this.obstacles[i].tree = tree;
+					this.obstacles[i].old = false;
+					this.obstacles[i].hit = false;
 
-				this.obstacles[i].tree = tree;
-				this.obstacles[i].old = false;
-				this.obstacles[i].hit = false;
-
-				this.mesh.add(tree.mesh);
+					this.mesh.add(tree.mesh);
+				}
 
 			}
 
