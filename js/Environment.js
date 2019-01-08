@@ -127,6 +127,19 @@ function Tree(){
 
 	}
 
+	var t = 0;
+	if(COLLIDERS_VISIBLE) t = 1; 
+	this.collision_box = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, height), 
+								new THREE.MeshBasicMaterial({
+									transparent: true,
+									opacity: t,
+									color: 0x00ff00
+								}));
+
+	// Add collision box to main mesh
+	this.mesh.add(this.collision_box);
+
+
 }
 
 function Collectable(size=20, offset=10){

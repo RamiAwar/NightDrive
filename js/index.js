@@ -1,4 +1,6 @@
 // Entry point
+// 
+// 
 // TODO: Add another entry point from HTML button starter menu (1)
 window.addEventListener('load', init, false);
 
@@ -49,7 +51,10 @@ function init(){
 
 	});
 
-	
+	// Initialize menu
+	update_level_display();
+	update_score_display();
+	update_distance_display();
 
 	// start game loop
 	game_loop();
@@ -59,8 +64,18 @@ function init(){
 
 
 
+function update_level_display(){
+	var level_text = "Level " + GAME.level;
+	$("#level").html(level_text);
+}
 
+function update_score_display(){
+	$(".progress-bar").css("width", GAME.score + "%").attr("aria-valuenow", GAME.score);
+}
 
+function update_distance_display(){
+	$("#distance").html(GAME.distance);
+}
 
 
 
@@ -116,7 +131,6 @@ function game_loop(){
 
 	requestAnimationFrame(game_loop);
 	
-
 	//TODO: Add correct codition
 	if(true){
 
@@ -124,35 +138,30 @@ function game_loop(){
 
 		sky.mesh.rotation.x += 0.003;
 
-		
 	}	
 
 	if(GAME.started) {
 
 		GAME.distance++;
-		GAME.score -= 0.5;
-
+		
 		check_collision(car.mesh.children[0]);
 
 		// ARCHITECTURE: Combine these in a smart way (minimizing coupling) (1)
 		car.update();
 		car_movement();
 
-		document.getElementById("score").style.width = "" + GAME.score + "%";
-		document.getElementById("distance").innerHTML = GAME.distance;
-
+		update_distance_display();
 	}
-	
-
-
 
 	SCENE.renderer.render(SCENE.scene, camera);
+
 }
 
 function input_handler(event){
 
-	// normalize mouse input value
-	var x = (event.clientX/SCENE.WIDTH)*2 - 1; // value between -1 and 1
+	// TODO: Change input  collection from scene_width to center +- scene_width/2
+	var movement_speed = 0.4;
+	var x = ((event.clientX/SCENE.WIDTH)*2 - 1)/movement_speed; // value between -1 and 1
 	var y = (event.clientY/SCENE.HEIGHT)*2 - 1;// value between -1 and 1
 
 	mouse = {x:x, y:y};
@@ -164,7 +173,7 @@ function car_movement(){
 
 	var speed = 0.03;
 
-	var target_x = map(mouse.x, -1, 1, -150, 150);
+	var target_x = map(Math.min(Math.max(mouse.x, -1), 1), -1, 1, -150, 150);
 	var target_y = map(mouse.y, -1, 1, 25, 175);
 
 	var error = target_x - car.mesh.position.x;
@@ -190,7 +199,7 @@ function car_movement(){
 
 function make_transparent(object, opacity){
 	object.material.transparent = true;
-	object.material.opacity = opacity;
+	if(object.material.opacity != 0) object.material.opacity = opacity;
 }
 
 
@@ -217,7 +226,7 @@ function check_collision(Player){
 	    	// This can be further reduced to a smaller window
 	    	if(road.obstacles[tree_index].global_y < car.mesh.position.y - 20) continue;
 
-	    	var collision_results = ray.intersectObject(road.obstacles[tree_index].tree.mesh.children[0]);
+	    	var collision_results = ray.intersectObject(road.obstacles[tree_index].tree.collision_box);
 	    	if (collision_results.length > 0 && collision_results[0].distance < directionVector.length()) {
 
             	if(!road.obstacles[tree_index].hit){
@@ -235,7 +244,10 @@ function check_collision(Player){
 						make_transparent(obj.children[j], 0.4);
 					}	        	
 
+					// Update onscreen score
 					GAME.score -= 5;
+					if(GAME.score < 0) GAME.score = 0;
+					update_score_display();
 
 				}
 	        }
@@ -254,12 +266,13 @@ function check_collision(Player){
 
             	if(!road.collectables[collectable_index].hit){
 	            	
-
-            		// SCENE.sfx.ding_sfx.stop();
             		c = SCENE.sfx.ding_sfx.cloneNode();
             		c.play();
 
-            		GAME.score+=10;
+            		GAME.score += 10;
+            		if(GAME.score > 100) GAME.score = 100;
+            		// Update onscreen score
+            		update_score_display();
 
 	            	road.collectables[collectable_index].hit = true;
 	            	var obj = road.collectables[collectable_index].collectable.mesh;
