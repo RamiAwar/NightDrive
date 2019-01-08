@@ -60,32 +60,48 @@ function create_scene(element_id, orbit_controls=false){
 
 	camera.lookAt(0, 0, -200);
 
-	var listener = new THREE.AudioListener();
-	camera.add( listener );
+	// 3D AUDIO
+	// var listener = new THREE.AudioListener();
+	// camera.add( listener );
 
+
+	// var audioLoader = new THREE.AudioLoader();
+
+	// var engine_loop_sfx = new THREE.Audio(listener);
+	// var hit_sfx = new THREE.Audio(listener);
+	// var ding_sfx = new THREE.Audio(listener);
+
+	// audioLoader.load( 'sounds/punch.mp3', function( buffer ) {
+	// 	hit_sfx.setBuffer( buffer );
+	// 	hit_sfx.setVolume(1);
+	// });	
+
+	// audioLoader.load( 'sounds/sleigh.mp3', function( buffer ) {
+	// 	ding_sfx.setBuffer( buffer );
+	// 	ding_sfx.setVolume(1);
+	// });	
+
+	// audioLoader.load( 'sounds/engine_loop.ogg', function( buffer ) {
+	// 	engine_loop_sfx.setBuffer( buffer );
+	// 	engine_loop_sfx.setLoop(true);
+	// 	engine_loop_sfx.setVolume(0.2);
+	// });
+
+	// 2D Audio
 	
-	var audioLoader = new THREE.AudioLoader();
 
-	var engine_loop_sfx = new THREE.Audio(listener);
-	var hit_sfx = new THREE.Audio(listener);
-	var ding_sfx = new THREE.Audio(listener);
+	var hit_sfx = new Audio("sounds/punch.mp3");
+	hit_sfx.preload = 'auto';
+	hit_sfx.load();
 
-	audioLoader.load( 'sounds/punch.mp3', function( buffer ) {
-		hit_sfx.setBuffer( buffer );
-		hit_sfx.setVolume(1);
-	});	
-
-	audioLoader.load( 'sounds/ding.mp3', function( buffer ) {
-		ding_sfx.setBuffer( buffer );
-		ding_sfx.setVolume(1);
-	});	
-
-	audioLoader.load( 'sounds/engine_loop.ogg', function( buffer ) {
-		engine_loop_sfx.setBuffer( buffer );
-		engine_loop_sfx.setLoop(true);
-		engine_loop_sfx.setVolume(0.2);
-	});
-
+	var ding_sfx = new Audio("sounds/sleigh.mp3");
+	ding_sfx.preload = 'auto';
+	ding_sfx.load();
+	
+	var engine_loop_sfx = new Audio("sounds/engine_loop.ogg");
+	engine_loop_sfx.preload = 'auto';
+	engine_loop_sfx.load();
+	
 
 	return {
 		scene: scene,
@@ -99,8 +115,6 @@ function create_scene(element_id, orbit_controls=false){
 		renderer: renderer,
 		container: container,
 		controls: controls,
-		listener: listener,
-		audioLoader: audioLoader,
 		sfx: {
 			engine_loop_sfx: engine_loop_sfx,
 			hit_sfx: hit_sfx,

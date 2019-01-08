@@ -1,5 +1,9 @@
 // Contains all elements of the environment (Clouds, sky, road)
 
+
+var COLLIDERS_VISIBLE = false;
+
+
 function Cloud(min_clouds=5, n_cloud_spread=3){
 
 	// Create empty container to hold parts of cloud
@@ -74,7 +78,7 @@ function Sky(n_clouds=20, cloud_height=1000, horizontal_spread=800, vertical_spr
 		c.mesh.scale.set(s, s, s);
  
 		// Add cloud to main mesh container
-		c.mesh.castShadow = true;
+		// c.mesh.castShadow = true;
 		this.mesh.add(c.mesh);
 	}
 }
@@ -117,13 +121,62 @@ function Tree(){
 		var cone = new THREE.Mesh(cone_geometry, cone_material);
 
 		cone.castShadow = true;
-		cone.receiveShadow = true;
+		cone.receiveShadow = false;
 
 		cone.position.y = 14*(i-1);
 		
 		this.mesh.add(cone);
 
 	}
+
+}
+
+function Collectable(size=20, offset=35){
+
+	this.size = size;
+
+	var box_geometry = new THREE.BoxGeometry(size, size, size);
+
+	var map;
+	var textures = ['textures/gift/cubes.jpg', 'textures/gift/snowflakes.jpg', 'textures/gift/trees.jpg'];
+	var n_rand = Math.random();
+	var n_maps = textures.length;
+
+	for(var i = 0; i < n_maps; i++){
+	
+		if(n_rand > (1/n_maps)*i && n_rand < (1/n_maps)*(i+1)){
+			map = new THREE.TextureLoader().load(textures[i]);
+		}
+	}
+	
+
+	var side_material = new THREE.MeshBasicMaterial({
+		map: map, 
+		color: 0xffffff,
+		shading: THREE.FlatShading, 
+		side: THREE.DoubleSide
+	});
+
+	var cube_materials = [
+		side_material, // RIGHT
+		side_material, // LEFT
+		side_material, // TOP
+		side_material, // BOTTOM
+		side_material, // FRONT
+		side_material // BACK
+	];
+
+	var t = 0;
+	if(COLLIDERS_VISIBLE) t = 1; 
+	this.collision_box = new THREE.Mesh(new THREE.BoxGeometry(size + offset, size + offset, size+offset), 
+								new THREE.MeshBasicMaterial({
+									transparent: true,
+									opacity: t,
+									color: 0x00ff00
+								}));
+
+	this.mesh = new THREE.Mesh(box_geometry, cube_materials);
+	this.mesh.castShadow = true;
 
 }
 
@@ -135,6 +188,10 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 	this.ground_offset = 25;
 	this.spawn = spawn;
 
+
+	
+	
+
 	var geometry = new THREE.CylinderGeometry( radius, radius, height, radial_segments, height_segments );	
 
 	geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
@@ -145,10 +202,15 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 		transparent: false
 	});
 
-	this.mesh.add(new THREE.Mesh(geometry, material));
+	var ground_mesh = new THREE.Mesh(geometry, material);
+	ground_mesh.castShadow = true;
+	ground_mesh.receiveShadow = true;
+	this.mesh.add(ground_mesh);
 	this.mesh.receiveShadow = true;
 
 	this.obstacles = [];
+	this.collectables = [];
+
 	this.num_obstacles = num_obstacles;
 
 	for(var i = 0; i < this.num_obstacles; i++){
@@ -163,6 +225,17 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 		tree.mesh.rotation.y = Math.random()*Math.PI;
 		
 		tree.mesh.rotation.x = angle;
+
+		// Create collectable with probability 
+	
+		this.collectables.push({
+			collectable: null,
+			hit: false,
+			old: false,
+			empty: true
+		});
+		
+
 
 		var obstacle = {
 			tree: tree,
@@ -193,6 +266,8 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 		road.mesh.rotation.x += this.angular_speed;
  
 		// Only spawn new obstacles in a certain window (at a certain angle)
+
+		// SCENE.scene.add(box.mesh);
 		
 		// Dead zone
 		
@@ -220,6 +295,11 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 			if(obstacle.global_y < -300 && obstacle.old){
 
 				this.mesh.remove(obstacle.tree.mesh);
+				
+				if(!this.collectables[i].empty){
+					this.mesh.remove(this.collectables[i].collectable.mesh);
+					this.mesh.remove(this.collectables[i].collectable.collision_box);
+				}
 
 				if(this.spawn == true){
 					// Create another tree at the initial angle
@@ -229,10 +309,44 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 					tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(obstacle.initial_angle);
 					tree.mesh.position.x = Math.random()*300 - 150; 
 					tree.mesh.rotation.y = Math.random()*Math.PI;
-					
+
 					this.obstacles[i].tree = tree;
 					this.obstacles[i].old = false;
 					this.obstacles[i].hit = false;
+
+					// Create collectable with probability 
+					if(Math.random() < 1){
+
+						// Create colelctable
+						var collectable = new Collectable();
+
+						// Take whichever side has more space
+						if(tree.mesh.position.x > 0){
+							collectable.mesh.position.x = (tree.mesh.position.x - 150)/ 2;
+						}else{
+							collectable.mesh.position.x = ( 150 + tree.mesh.position.x)/2;
+						}
+
+						collectable.mesh.position.y = tree.mesh.position.y;
+						collectable.mesh.position.z = tree.mesh.position.z;
+						collectable.mesh.rotation.x = this.obstacles[i].angle;
+
+						collectable.collision_box.position.x = collectable.mesh.position.x;
+						collectable.collision_box.position.y = collectable.mesh.position.y;
+						collectable.collision_box.position.z = collectable.mesh.position.z;
+						collectable.collision_box.rotation.x = collectable.mesh.rotation.x;
+
+						this.collectables[i].collectable = collectable;
+						this.collectables[i].hit = false;
+						this.collectables[i].old = false;
+						this.collectables[i].empty = false;
+
+			 			this.mesh.add(collectable.mesh);
+			 			this.mesh.add(collectable.collision_box);
+
+					}else{
+						this.collectables[i].empty = true;
+					}
 
 					this.mesh.add(tree.mesh);
 				}

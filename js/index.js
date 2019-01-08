@@ -12,7 +12,7 @@ var context;
 var world_angle=60, 
  	world_radius=600;
 
-
+var GAME;
 
 function init(){
 
@@ -21,6 +21,8 @@ function init(){
 
 	// set up SCENE.scene, camera, SCENE.renderer
 	SCENE = create_scene('world', true);
+
+	GAME = initialize_game();
 
 	document.addEventListener('click', context.resume().then(() => {console.log("Audio context resumed.")}));
 
@@ -97,6 +99,10 @@ function create_environment(world_radius=600, world_width=400){
 	SCENE.scene.add(sky.mesh);
 
 
+	// var box = new Collectable();
+	// box.mesh.position.y += 10;
+	// SCENE.scene.add(box.mesh);
+
 	// tree = new Tree(0,0,0);
 	// tree.mesh.position.x = 0;
 	// tree.mesh.position.y = 30;
@@ -113,7 +119,7 @@ function game_loop(){
 
 	requestAnimationFrame(game_loop);
 	
-	var collided = check_collision(car.mesh.children[0], road);
+	var collided = check_collision(car.mesh.children[0]);
 	if(true){
 
 	
@@ -187,26 +193,61 @@ function check_collision(Player){
         var directionVector = globalVertex.sub(Player.position);
         var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
 
+        // Check obstacle collision
 	    for(var tree_index = 1; tree_index < road.obstacles.length; tree_index++){
+
+	    	// For performance increase, check less collisions, only imminent
+	    	// This can be further reduced to a smaller window
+	    	if(road.obstacles[tree_index].global_y < car.mesh.position.y - 20) continue;
 
 	    	var collision_results = ray.intersectObject(road.obstacles[tree_index].tree.mesh.children[0]);
 	    	if (collision_results.length > 0 && collision_results[0].distance < directionVector.length()) {
-            	
-
 
             	if(!road.obstacles[tree_index].hit){
 	            
-            		SCENE.sfx.hit_sfx.play();
+            		c = SCENE.sfx.hit_sfx.cloneNode();
+            		c.play();
 
             		car.mesh.rotation.x += Math.PI/14;
             		car.mesh.position.z += 60;
-            		car.mesh.position.y -= 10;
+            		car.mesh.position.y -= 20;
 
 	            	road.obstacles[tree_index].hit = true;
 	            	var obj = road.obstacles[tree_index].tree.mesh;
 					for(var j = 0; j < obj.children.length; j++){
 						make_transparent(obj.children[j], 0.4);
 					}	        	
+
+					
+				}
+	        }
+	    }
+
+	    // Check collectable collision
+	    for(var collectable_index = 0; collectable_index < road.collectables.length; collectable_index++){
+
+	    	// Obstacles and collectables have same y and z values
+	    	if(road.collectables[collectable_index].empty) continue;
+	    	if(road.obstacles[collectable_index].global_y < car.mesh.position.y - 20) continue;
+
+	    	var collision_results = ray.intersectObject(road.collectables[collectable_index].collectable.collision_box);
+	    	
+	    	if (collision_results.length > 0 && collision_results[0].distance < directionVector.length()) {
+
+            	if(!road.collectables[collectable_index].hit){
+	            	
+
+            		// SCENE.sfx.ding_sfx.stop();
+            		c = SCENE.sfx.ding_sfx.cloneNode();
+            		c.play();
+
+            		console.log("OK");
+
+	            	road.collectables[collectable_index].hit = true;
+	            	var obj = road.collectables[collectable_index].collectable.mesh;
+
+	            	// Do something with object
+					        	
 
 					
 				}
