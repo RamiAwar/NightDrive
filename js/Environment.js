@@ -1,6 +1,4 @@
 // Contains all elements of the environment (Clouds, sky, road)
-
-
 var COLLIDERS_VISIBLE = false;
 
 
@@ -188,7 +186,7 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 	this.ground_offset = 25;
 	this.spawn = spawn;
 
-
+	// TODO: Check weird bug in floor on game start, just below camera
 	
 	
 

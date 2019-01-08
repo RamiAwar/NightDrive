@@ -1,4 +1,5 @@
 // Entry point
+// TODO: Add another entry point from HTML button starter menu (1)
 window.addEventListener('load', init, false);
 
 
@@ -98,19 +99,6 @@ function create_environment(world_radius=600, world_width=400){
 	sky.mesh.position.y = -world_radius;
 	SCENE.scene.add(sky.mesh);
 
-
-	// var box = new Collectable();
-	// box.mesh.position.y += 10;
-	// SCENE.scene.add(box.mesh);
-
-	// tree = new Tree(0,0,0);
-	// tree.mesh.position.x = 0;
-	// tree.mesh.position.y = 30;
-	// tree.mesh.position.z = 0;
-	// tree.mesh.rotation.y = Math.PI/6;
-	// SCENE.scene.add(tree.mesh);
-
-
 }
 
 
@@ -127,7 +115,7 @@ function game_loop(){
 
 		sky.mesh.rotation.x += 0.003;
 
-		// TODO: Combine these in a smart way (minimizing coupling)
+		// ARCHITECTURE: Combine these in a smart way (minimizing coupling) (1)
 		car.update();
 		car_movement();
 	}	
@@ -179,6 +167,9 @@ function make_transparent(object, opacity){
 	object.material.opacity = opacity;
 }
 
+
+
+// ARCHITECTURE: Refactor collision system into neater implementation
 function check_collision(Player){
 
 	// TODO: Improve collision system such as to have custom collision effects.
