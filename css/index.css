@@ -20,8 +20,8 @@ canvas{
 	background: linear-gradient(#182130, #001101);
 }
 
-
 .menu{
+	position: absolute;
 	display:flex;
 	justify-content: center;
 	z-index:110;
@@ -32,21 +32,24 @@ canvas{
 }
 
 #play-button{
-	display:block;
-	position: absolute;
 
-	width:20%;
-	height:15%;
-	
-	background-image: url("../img/play.png");
-	background-size: contain;
-	background-repeat: no-repeat;
-	background-position: center center;
-	z-index: 110;
-
+	min-height: 20%;
+	max-width:50%;
 	margin:auto;
+	transition: all 0.5s;
+	transform: scale(0.8);
 }
 
-#play-button: hover{
-
+#play-button:hover{
+	transition: all 0.5s;
+	transform: scale(1); 
+	cursor:pointer;
 }
+
+.stats{
+	width: 100%;
+}
+/*
+#score{
+	width: 50%;
+}*/

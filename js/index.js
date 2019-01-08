@@ -2,7 +2,6 @@
 // TODO: Add another entry point from HTML button starter menu (1)
 window.addEventListener('load', init, false);
 
-
 // Global variables
 var SCENE;
 
@@ -13,20 +12,18 @@ var context;
 var world_angle=60, 
  	world_radius=600;
 
-var GAME;
+var GAME = {};
+
 
 function init(){
+
+	GAME = initialize_game();
 
 	// Initialize audio
 	context = new AudioContext();
 
 	// set up SCENE.scene, camera, SCENE.renderer
 	SCENE = create_scene('world', true);
-
-	GAME = initialize_game();
-
-	document.addEventListener('click', context.resume().then(() => {console.log("Audio context resumed.")}));
-
 
 	// set up lighting
 	create_lights(SCENE.scene);
@@ -37,6 +34,20 @@ function init(){
 
 	// Input handler
 	document.addEventListener('mousemove', input_handler, false);
+
+	// Start menu handler
+	document.getElementById('play-button').addEventListener('click', ()=>{
+
+		// Resume audio context
+		context.resume().then(() => {console.log("Audio context resumed.")});
+
+		// Hide play button
+		document.getElementById('play-button').style.visibility = 'hidden';
+
+		// Start game levels
+		start_game(GAME, car, road);
+
+	});
 
 	
 
@@ -105,18 +116,32 @@ function game_loop(){
 
 	requestAnimationFrame(game_loop);
 	
-	var collided = check_collision(car.mesh.children[0]);
+
+	//TODO: Add correct codition
 	if(true){
 
-	
 		road.update();
 
 		sky.mesh.rotation.x += 0.003;
 
+		
+	}	
+
+	if(GAME.started) {
+
+		GAME.distance++;
+
+		check_collision(car.mesh.children[0]);
+
 		// ARCHITECTURE: Combine these in a smart way (minimizing coupling) (1)
 		car.update();
 		car_movement();
-	}	
+
+	}
+	
+
+	document.getElementById("score").innerHTML = GAME.score;
+	document.getElementById("distance").innerHTML = GAME.distance;
 
 	SCENE.renderer.render(SCENE.scene, camera);
 }
@@ -207,7 +232,8 @@ function check_collision(Player){
 						make_transparent(obj.children[j], 0.4);
 					}	        	
 
-					
+					GAME.score -= 5;
+
 				}
 	        }
 	    }
@@ -230,7 +256,7 @@ function check_collision(Player){
             		c = SCENE.sfx.ding_sfx.cloneNode();
             		c.play();
 
-            		console.log("OK");
+            		GAME.score+=15;
 
 	            	road.collectables[collectable_index].hit = true;
 	            	var obj = road.collectables[collectable_index].collectable.mesh;
