@@ -129,7 +129,7 @@ function Tree(){
 
 }
 
-function Collectable(size=20, offset=35){
+function Collectable(size=20, offset=10){
 
 	this.size = size;
 

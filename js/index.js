@@ -80,15 +80,13 @@ function create_character(){
 
 	SCENE.scene.add(car.mesh);
 
-	SCENE.sfx.engine_loop_sfx.play();
-
 }
 
 
 
 function create_environment(world_radius=600, world_width=400){
 
-	road = new Road(true, world_radius, world_width);
+	road = new Road(false, world_radius, world_width);
 	road.mesh.position.y = -world_radius;
 	road.mesh.receiveShadow = true;
 	SCENE.scene.add(road.mesh);
