@@ -130,6 +130,7 @@ function game_loop(){
 	if(GAME.started) {
 
 		GAME.distance++;
+		GAME.score -= 0.5;
 
 		check_collision(car.mesh.children[0]);
 
@@ -137,11 +138,13 @@ function game_loop(){
 		car.update();
 		car_movement();
 
+		document.getElementById("score").style.width = "" + GAME.score + "%";
+		document.getElementById("distance").innerHTML = GAME.distance;
+
 	}
 	
 
-	document.getElementById("score").innerHTML = GAME.score;
-	document.getElementById("distance").innerHTML = GAME.distance;
+
 
 	SCENE.renderer.render(SCENE.scene, camera);
 }
@@ -256,12 +259,12 @@ function check_collision(Player){
             		c = SCENE.sfx.ding_sfx.cloneNode();
             		c.play();
 
-            		GAME.score+=15;
+            		GAME.score+=10;
 
 	            	road.collectables[collectable_index].hit = true;
 	            	var obj = road.collectables[collectable_index].collectable.mesh;
 
-	            	// Do something with object
+	            	// TODO: Delete object upon collision
 					        	
 
 					

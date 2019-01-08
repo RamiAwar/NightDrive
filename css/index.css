@@ -47,9 +47,21 @@ canvas{
 }
 
 .stats{
+	position:absolute;
+	padding:2em;
+
+	z-index: 110;
 	width: 100%;
 }
-/*
-#score{
-	width: 50%;
-}*/
+
+
+.progress{
+	width: 30%;
+}
+
+
+#distance{
+	font-size:1.5em;
+	color: #ffeeee;
+	font-family: "Press Start 2P";
+}
