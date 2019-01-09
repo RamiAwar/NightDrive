@@ -44,7 +44,7 @@ function init(){
 		context.resume().then(() => {console.log("Audio context resumed.")});
 
 		// Hide play button
-		document.getElementById('play-button').style.visibility = 'hidden';
+		document.getElementById('play-button').style.display = 'none';
 
 		// Start game levels
 		start_game(GAME, car, road);
@@ -64,6 +64,7 @@ function init(){
 
 
 function update_health_display(){
+
 	$("#health").css("width", GAME.health + "%").attr("aria-valuenow", GAME.score);
 }
 
@@ -71,24 +72,24 @@ function update_level_display(){
 
 	var level_text = "Level " + GAME.level;
 	$("#level").html(level_text);
-
 	update_multiplier_display();
 
 }
 
 function update_score_display(){
+
 	$("#score").css("width", GAME.score + "%").attr("aria-valuenow", GAME.score);
 }
 
 function update_distance_display(){
+
 	$("#distance").html(GAME.distance);
 }
 
 function update_multiplier_display(){
+
 	$("#multiplier").html("x" + GAME.score_multiplier);
 }
-
-
 
 
 
@@ -162,6 +163,12 @@ function game_loop(){
 		car_movement();
 
 		update_distance_display();
+
+	}
+
+
+	if(GAME.health <= 0){
+		end_game();
 	}
 
 	SCENE.renderer.render(SCENE.scene, camera);

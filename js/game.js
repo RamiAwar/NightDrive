@@ -2,6 +2,8 @@ var road, car, GAME;
 
 function initialize_game(){
 
+	
+
 	var GAME = {};
 
 	GAME.started = false;
@@ -32,6 +34,10 @@ function initialize_game(){
 }
 
 function start_game(GAME, car, road){
+
+	//Show UI Components
+	$('.stats').css("visibility", "visible");
+
 
 	GAME.started = true;
 	GAME.level = 0;
@@ -69,6 +75,8 @@ function increase_difficulty(GAME){
 	return GAME;
 
 }
+
+
 function decrease_difficulty(GAME){
 
 	// handle level increase mechanic
@@ -87,8 +95,17 @@ function decrease_difficulty(GAME){
 
 
 // TODO: Endgame condition 
-function update_game(){
+function end_game(){
 
+	road.spawn = false;
+	GAME.started = false;
+
+	// Hide UI components
+	$('.stats').css("visibility", "hidden");
+
+	// Show gameover screen
+	$('#gameover').css("display", "inline");
+	$('#gameover').css("pointer-events", "auto");
 
 
 }

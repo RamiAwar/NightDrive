@@ -31,7 +31,7 @@ canvas{
 	text-align:center;
 }
 
-#play-button{
+.center-image{
 
 	min-height: 20%;
 	max-width:50%;
@@ -40,7 +40,7 @@ canvas{
 	transform: scale(0.8);
 }
 
-#play-button:hover{
+.center-image:hover{
 	transition: all 0.5s;
 	transform: scale(1); 
 	cursor:pointer;
