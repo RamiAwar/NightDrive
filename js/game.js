@@ -99,6 +99,8 @@ function end_game(){
 
 	road.spawn = false;
 	GAME.started = false;
+	GAME.can_retry = true;
+	road.set_speed(0);
 
 	// Hide UI components
 	$('.stats').css("visibility", "hidden");
@@ -106,6 +108,13 @@ function end_game(){
 	// Show gameover screen
 	$('#gameover').css("display", "inline");
 	$('#gameover').css("pointer-events", "auto");
+
+
+	// TODO: Handle this more neatly
+	$('#gameover').click(function(){
+
+		location.reload();
+	});
 
 
 }
