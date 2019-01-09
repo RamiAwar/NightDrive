@@ -57,7 +57,7 @@ canvas{
 
 
 .progress{
-	width: 30%;
+	width: 20%;
 	height: 40px;
 	margin: auto 0px;
 }
@@ -69,12 +69,16 @@ canvas{
 
 .label{
 	display:block;
-	font-size:1em;
+	font-size:0.9em;
 	color: #ffeeee;
 	vertical-align: middle;
 	text-align:center;
 	font-family: "Press Start 2P";
 	padding:1em ;
 
+}
+
+#health-container{
+	margin-left:auto;
 }
 

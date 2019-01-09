@@ -52,6 +52,7 @@ function init(){
 	});
 
 	// Initialize menu
+	update_health_display();
 	update_level_display();
 	update_score_display();
 	update_distance_display();
@@ -62,19 +63,29 @@ function init(){
 }
 
 
-
+function update_health_display(){
+	$("#health").css("width", GAME.health + "%").attr("aria-valuenow", GAME.score);
+}
 
 function update_level_display(){
+
 	var level_text = "Level " + GAME.level;
 	$("#level").html(level_text);
+
+	update_multiplier_display();
+
 }
 
 function update_score_display(){
-	$(".progress-bar").css("width", GAME.score + "%").attr("aria-valuenow", GAME.score);
+	$("#score").css("width", GAME.score + "%").attr("aria-valuenow", GAME.score);
 }
 
 function update_distance_display(){
 	$("#distance").html(GAME.distance);
+}
+
+function update_multiplier_display(){
+	$("#multiplier").html("x" + GAME.score_multiplier);
 }
 
 
@@ -117,7 +128,7 @@ function create_environment(world_radius=600, world_width=400){
 	road.mesh.receiveShadow = true;
 	SCENE.scene.add(road.mesh);
 
-	road.set_speed(0.005);
+	road.set_speed(GAME.initial_speed);
 
 	sky = new Sky(60, 1000, 800, 50);
 	sky.mesh.position.y = -world_radius;
@@ -160,7 +171,7 @@ function game_loop(){
 function input_handler(event){
 
 	// TODO: Change input  collection from scene_width to center +- scene_width/2
-	var movement_speed = 0.4;
+	var movement_speed = 0.3;
 	var x = ((event.clientX/SCENE.WIDTH)*2 - 1)/movement_speed; // value between -1 and 1
 	var y = (event.clientY/SCENE.HEIGHT)*2 - 1;// value between -1 and 1
 
@@ -234,7 +245,7 @@ function check_collision(Player){
             		c = SCENE.sfx.hit_sfx.cloneNode();
             		c.play();
 
-            		car.mesh.rotation.x += Math.PI/14;
+            		car.mesh.rotation.x += Math.PI/14; 
             		car.mesh.position.z += 60;
             		car.mesh.position.y -= 20;
 
@@ -245,8 +256,15 @@ function check_collision(Player){
 					}	        	
 
 					// Update onscreen score
-					GAME.score -= 5;
-					if(GAME.score < 0) GAME.score = 0;
+					// GAME.score -= 5;
+					GAME.health -= 10;
+
+					if(GAME.score < 0 ) {
+
+						GAME.score = 0;
+						// GAME = decrease_difficulty(GAME);
+					}
+					update_health_display();
 					update_score_display();
 
 				}
@@ -270,7 +288,25 @@ function check_collision(Player){
             		c.play();
 
             		GAME.score += 10;
-            		if(GAME.score > 100) GAME.score = 100;
+            		
+            		// Level up
+            		if(GAME.score > 100) {
+
+            			GAME.score = 0;
+            			GAME.level++;
+
+            			GAME = increase_difficulty(GAME);
+            			update_level_display();
+
+
+            			// DESIGN: Check the balance of this feature
+            			// if(GAME.level % 10 == 0){
+            			// 	GAME.health = 100;
+            			// }
+            			// update_health_display();
+
+            		}
+
             		// Update onscreen score
             		update_score_display();
 

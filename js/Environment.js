@@ -139,7 +139,6 @@ function Tree(){
 	// Add collision box to main mesh
 	this.mesh.add(this.collision_box);
 
-
 }
 
 function Collectable(size=20, offset=10){
@@ -326,7 +325,7 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 					this.obstacles[i].hit = false;
 
 					// Create collectable with probability 
-					if(Math.random() < 1){
+					if(Math.random() < this.spawn_rate){
 
 						// Create colelctable
 						var collectable = new Collectable();
