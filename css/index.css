@@ -49,7 +49,7 @@ canvas{
 .stats{
 
 	position:absolute;
-	padding:2em;
+	padding:1em;
 
 	z-index: 110;
 	width: 100%;
@@ -58,7 +58,7 @@ canvas{
 
 .progress{
 	width: 20%;
-	height: 40px;
+	height: 30px;
 	margin: auto 0px;
 }
 
@@ -69,7 +69,7 @@ canvas{
 
 .label{
 	display:block;
-	font-size:0.9em;
+	font-size:0.8em;
 	color: #ffeeee;
 	vertical-align: middle;
 	text-align:center;
@@ -78,7 +78,13 @@ canvas{
 
 }
 
-#health-container{
+.float-right{
 	margin-left:auto;
 }
+
+#settings{
+	cursor: pointer;
+}
+
+
 

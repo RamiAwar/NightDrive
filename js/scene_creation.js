@@ -1,4 +1,4 @@
-function create_scene(element_id, orbit_controls=false){
+function create_scene(element_id, orbit_controls=true){
 
 	HEIGHT = window.innerHeight;
 	WIDTH = window.innerWidth;

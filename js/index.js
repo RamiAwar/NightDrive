@@ -144,7 +144,7 @@ function game_loop(){
 	requestAnimationFrame(game_loop);
 	
 	//TODO: Add correct codition
-	if(true){
+	if(!GAME.paused){
 
 		road.update();
 
@@ -152,7 +152,7 @@ function game_loop(){
 
 	}	
 
-	if(GAME.started) {
+	if(GAME.started && !GAME.paused) {
 
 		GAME.distance++;
 		
@@ -167,7 +167,7 @@ function game_loop(){
 	}
 
 
-	if(GAME.health <= 0){
+	if(!GAME.ended && GAME.health <= 0 && !GAME.paused){
 		end_game();
 	}
 
@@ -262,14 +262,11 @@ function check_collision(Player){
 						make_transparent(obj.children[j], 0.4);
 					}	        	
 
-					// Update onscreen score
-					// GAME.score -= 5;
-					GAME.health -= 10;
+					GAME.health -= 100;
 
 					if(GAME.score < 0 ) {
 
 						GAME.score = 0;
-						// GAME = decrease_difficulty(GAME);
 					}
 					update_health_display();
 					update_score_display();
@@ -306,7 +303,7 @@ function check_collision(Player){
             			update_level_display();
 
 
-            			// DESIGN: Check the balance of this feature
+            			// DESIGN: (3) Check the balance of this feature
             			// if(GAME.level % 10 == 0){
             			// 	GAME.health = 100;
             			// }
@@ -320,8 +317,11 @@ function check_collision(Player){
 	            	road.collectables[collectable_index].hit = true;
 	            	var obj = road.collectables[collectable_index].collectable.mesh;
 
-	            	// TODO: Delete object upon collision
-					        	
+	            	// Delete object upon collision
+					road.mesh.remove(obj);
+
+					// TODO: (2) Add particle effect explosion upon destruction
+
 
 					
 				}

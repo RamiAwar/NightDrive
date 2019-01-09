@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>ThreeJS Crash Course</title>
+	<title>Night Drive</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 	<link rel="stylesheet" href="css/stars.css">
 	<link rel="stylesheet" href="css/index.css">
@@ -17,7 +17,7 @@
 		<img class="center-image" id="gameover" src="img/gameover.png"/>
 	</div>
 	
-	<div  class="center-image" id="play-button" >
+	<div class="center-image" id="play-button" >
 		<img class="center-image" id="play-button" src="img/play.png"/>
 	</div>
 
@@ -35,7 +35,8 @@
 	  		<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" id="score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" ></div>
 	  	</div>
 
-	  	<div class="progress float-right" id="health-container">
+	  	<div class="float-right label" id="fuel">Fuel</div>
+	  	<div class="progress" id="health-container">
 	  		<div class="progress-bar progress-bar-striped bg-danger progress-bar-animated" role="progressbar" id="health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" ></div>
 	  	</div>
 
@@ -46,12 +47,39 @@
 	<div class="line">
 		<div class="label">Distance: </div>
 		<div class="label" id="distance"></div>
+
+
+		<div class="label float-right" id="highscore"></div>
 	</div>
 
 	<div class="line">
 		<div class="label" id="multiplier"></div>
+		<div class="float-right" id="settings">
+			<img src="img/cog.png" width="45vw" height="45vw"></div>
+		</div>
 	</div>
 
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -62,9 +90,13 @@
 	</div>
 </div>
 
+
+
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<script src="js/js.cookie.js"></script>
 
 <script src="js/dat.min.js"></script>
 

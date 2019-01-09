@@ -223,42 +223,56 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 
 	this.num_obstacles = num_obstacles;
 
-	for(var i = 0; i < this.num_obstacles; i++){
+	//TODO: (1) Method that initializes road with initial obstacles/collectables
+	this.initialize = function(){
 
-		var tree = new Tree();
-		var angle = i*Math.PI*2/this.num_obstacles;
+		for(var i = 0; i < this.num_obstacles; i++){
+
+			var tree = new Tree();
+			var angle = i*Math.PI*2/this.num_obstacles;
+			
+
+			tree.mesh.position.y = (radius + this.ground_offset)*Math.cos(angle); 
+			tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(angle);
+			tree.mesh.position.x = Math.random()*300 - 150; 
+			tree.mesh.rotation.y = Math.random()*Math.PI;
+			
+			tree.mesh.rotation.x = angle;
+
+			// Create collectable with probability 
 		
-
-		tree.mesh.position.y = (radius + this.ground_offset)*Math.cos(angle); 
-		tree.mesh.position.z = (radius + this.ground_offset)*Math.sin(angle);
-		tree.mesh.position.x = Math.random()*300 - 150; 
-		tree.mesh.rotation.y = Math.random()*Math.PI;
-		
-		tree.mesh.rotation.x = angle;
-
-		// Create collectable with probability 
-	
-		this.collectables.push({
-			collectable: null,
-			hit: false,
-			old: false,
-			empty: true
-		});
-		
+			this.collectables.push({
+				collectable: null,
+				hit: false,
+				old: false,
+				empty: true
+			});
+			
 
 
-		var obstacle = {
-			tree: tree,
-			initial_angle: angle,
-			angle: angle,
-			global_x: tree.mesh.position.x,
-			global_y: tree.mesh.position.y,
-			global_z: tree.mesh.position.z,
-			old: true,
-			hit: false
+			var obstacle = {
+				tree: tree,
+				initial_angle: angle,
+				angle: angle,
+				global_x: tree.mesh.position.x,
+				global_y: tree.mesh.position.y,
+				global_z: tree.mesh.position.z,
+				old: true,
+				hit: false
+			}
+
+			this.obstacles.push(obstacle);
 		}
+	}
 
-		this.obstacles.push(obstacle);
+	this.initialize();
+
+
+	// TODO: (1) Function that clears the road of obstacles/collectables
+	this.clear = function(){
+		for(var i = 0; i < this.obstacles.length; i++){
+
+		}
 	}
 
 	// Class methods
