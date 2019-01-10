@@ -41,6 +41,7 @@ function start_game(GAME, car, road){
 
 	$('#highscore').html(getCookie("highscore"));
 
+	GAME.ended = false;
 	GAME.paused = false;
 	GAME.started = true;
 	GAME.level = 0;
@@ -52,6 +53,8 @@ function start_game(GAME, car, road){
 	GAME.health = 100;
 
 	GAME.spawn_rate = 0.3;
+
+	road.set_speed(GAME.initial_speed);
 
 	road = road;
 	car = car;
@@ -73,7 +76,6 @@ function increase_difficulty(GAME){
 	GAME.score_multiplier += 0.5;
 
 	// DESIGN: Any new ideas for level increase?
-	// 
 	
 	return GAME;
 
@@ -122,7 +124,18 @@ function end_game(){
 	$('#gameover').click(function(){
 
 		car.mesh.position.x = 0;
+
+		// Clear road
+		road.clear();
+		road.initialize();
+
 		start_game(GAME, car, road);
+
+		// Hide gameover
+		$('#gameover').css("display", "none");
+		$('#gameover').css("pointer-events", "none");
+		$('#play-button').css("display", "inline");
+		$('#play-button').css("pointer-events", "auto");
 
 	});
 

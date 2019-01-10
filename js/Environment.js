@@ -240,7 +240,6 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 			tree.mesh.rotation.x = angle;
 
 			// Create collectable with probability 
-		
 			this.collectables.push({
 				collectable: null,
 				hit: false,
@@ -270,9 +269,18 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 
 	// TODO: (1) Function that clears the road of obstacles/collectables
 	this.clear = function(){
+		
 		for(var i = 0; i < this.obstacles.length; i++){
-
+			this.mesh.remove(this.obstacles[i].tree.mesh);
 		}
+
+		
+		for(var i = 0; i < this.collectables.length; i++){
+			this.mesh.remove(this.collectables[i].collectable.mesh);
+		}
+
+		this.obstacles = [];
+		this.collectables = [];
 	}
 
 	// Class methods

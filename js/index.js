@@ -134,7 +134,6 @@ function create_environment(world_radius=600, world_width=400){
 	road.mesh.receiveShadow = true;
 	SCENE.scene.add(road.mesh);
 
-	road.set_speed(GAME.initial_speed);
 
 	sky = new Sky(60, 1000, 800, 50);
 	sky.mesh.position.y = -world_radius;
