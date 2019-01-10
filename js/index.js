@@ -1,7 +1,6 @@
 // Entry point
 // 
 // 
-// TODO: Add another entry point from HTML button starter menu (1)
 window.addEventListener('load', init, false);
 
 // Global variables
@@ -68,34 +67,6 @@ function init(){
 }
 
 
-function update_health_display(){
-
-	$("#health").css("width", GAME.health + "%").attr("aria-valuenow", GAME.score);
-}
-
-function update_level_display(){
-
-	var level_text = "Level " + GAME.level;
-	$("#level").html(level_text);
-	update_multiplier_display();
-
-}
-
-function update_score_display(){
-
-	$("#score").css("width", GAME.score + "%").attr("aria-valuenow", GAME.score);
-}
-
-function update_distance_display(){
-
-	$("#distance").html(GAME.distance);
-}
-
-function update_multiplier_display(){
-
-	$("#multiplier").html("x" + GAME.score_multiplier);
-}
-
 
 
 function create_character(){
@@ -147,7 +118,7 @@ function game_loop(){
 
 	requestAnimationFrame(game_loop);
 	
-	//TODO: Add correct codition
+	// Add correct codition
 	if(!GAME.paused){
 
 		road.update();
@@ -181,7 +152,7 @@ function game_loop(){
 
 function input_handler(event){
 
-	// TODO: Change input  collection from scene_width to center +- scene_width/2
+	// Change input  collection from scene_width to center +- scene_width/2
 	var movement_speed = 0.3;
 	var x = ((event.clientX/SCENE.WIDTH)*2 - 1)/movement_speed; // value between -1 and 1
 	var y = (event.clientY/SCENE.HEIGHT)*2 - 1;// value between -1 and 1
@@ -229,7 +200,7 @@ function make_transparent(object, opacity){
 // ARCHITECTURE: Refactor collision system into neater implementation
 function check_collision(Player){
 
-	// TODO: Improve collision system such as to have custom collision effects.
+	// TODO: (2) Improve collision system such as to have custom collision effects.
 	//  depending on which side of the car the collision occured
 
 	// var Player = SCENE.scene.getObjectByName('car');

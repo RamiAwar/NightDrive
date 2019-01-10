@@ -38,6 +38,7 @@ function start_game(GAME, car, road){
 	//Show UI Components
 	$('.stats').css("visibility", "visible");
 	$('.menu').css("pointer-events", "none");
+	$("#settings-main").css("display", "none");
 
 	$('#highscore').html(getCookie("highscore"));
 
@@ -82,7 +83,7 @@ function increase_difficulty(GAME){
 }
 
 
-// TODO: Endgame condition 
+// Endgame condition 
 function end_game(){
 
 
@@ -120,9 +121,10 @@ function end_game(){
 	$('#gameover').css("pointer-events", "auto");
 
 
-	// TODO: Handle this more neatly
+	// Handle this more neatly
 	$('#gameover').click(function(){
 
+		// Reset car position
 		car.mesh.position.x = 0;
 
 		// Clear road
@@ -134,8 +136,11 @@ function end_game(){
 		// Hide gameover
 		$('#gameover').css("display", "none");
 		$('#gameover').css("pointer-events", "none");
-		$('#play-button').css("display", "inline");
-		$('#play-button').css("pointer-events", "auto");
+
+		update_health_display();
+		update_level_display();
+		update_multiplier_display();
+		update_score_display();
 
 	});
 
@@ -155,6 +160,12 @@ $("#settings").click(function(){
 	toggle_menu_modal();
 });
 
+$("#settings-main").click(function(){
+
+	toggle_menu_modal();
+});
+
+
 function toggle_menu_modal(){
 
 	$('#settings-modal').modal('toggle');
@@ -170,4 +181,32 @@ $('#settings-modal').on('hidden.bs.modal', function (e) {
 $('#settings-modal').on('show.bs.modal', function (e) {
 
 	GAME.paused = true;
-})
+});
+
+function update_health_display(){
+
+	$("#health").css("width", GAME.health + "%").attr("aria-valuenow", GAME.score);
+}
+
+function update_level_display(){
+
+	var level_text = "Level " + GAME.level;
+	$("#level").html(level_text);
+	update_multiplier_display();
+
+}
+
+function update_score_display(){
+
+	$("#score").css("width", GAME.score + "%").attr("aria-valuenow", GAME.score);
+}
+
+function update_distance_display(){
+
+	$("#distance").html(GAME.distance);
+}
+
+function update_multiplier_display(){
+
+	$("#multiplier").html("x" + GAME.score_multiplier);
+}

@@ -34,7 +34,7 @@ canvas{
 .center-image{
 
 	min-height: 20%;
-	max-width:50%;
+	max-width:20%;
 	margin:auto;
 	transition: all 0.5s;
 	transform: scale(0.8);

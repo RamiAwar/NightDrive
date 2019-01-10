@@ -198,7 +198,7 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 	this.ground_offset = 25;
 	this.spawn = spawn;
 
-	// TODO: Check weird bug in floor on game start, just below camera
+	// TODO: (1) Check weird bug in floor on game start, just below camera
 	
 	
 
@@ -223,8 +223,10 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 
 	this.num_obstacles = num_obstacles;
 
-	//TODO: (1) Method that initializes road with initial obstacles/collectables
+	// Method that initializes road with initial obstacles/collectables
 	this.initialize = function(){
+
+		this.mesh.rotation.x = 0;
 
 		for(var i = 0; i < this.num_obstacles; i++){
 
@@ -267,7 +269,7 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 	this.initialize();
 
 
-	// TODO: (1) Function that clears the road of obstacles/collectables
+	// Function that clears the road of obstacles/collectables
 	this.clear = function(){
 		
 		for(var i = 0; i < this.obstacles.length; i++){
@@ -276,11 +278,15 @@ function Road(spawn=false, radius=600, height=800, radial_segments=100, height_s
 
 		
 		for(var i = 0; i < this.collectables.length; i++){
-			this.mesh.remove(this.collectables[i].collectable.mesh);
+			if(!this.collectables[i].empty){
+				this.mesh.remove(this.collectables[i].collectable.mesh);
+			}
 		}
 
 		this.obstacles = [];
 		this.collectables = [];
+
+
 	}
 
 	// Class methods
