@@ -1,3 +1,8 @@
+SETTINGS = {};
+
+SETTINGS.antialias = false;
+
+
 function create_scene(element_id, orbit_controls=true){
 
 	HEIGHT = window.innerHeight;
@@ -12,7 +17,7 @@ function create_scene(element_id, orbit_controls=true){
 	aspect_ratio = WIDTH/HEIGHT;
 	field_of_view = 60; // degrees
 	near_plane = 1;
-	far_plane = 10000;
+	far_plane = 1000;
 	camera = new THREE.PerspectiveCamera(
 		field_of_view, 
 		aspect_ratio, 
@@ -25,11 +30,12 @@ function create_scene(element_id, orbit_controls=true){
 	camera.position.y = 30;
 
 	renderer = new THREE.WebGLRenderer({
+
 		// Allow transparency to show gradient css background
 		alpha:true,
 
 		// Enable anti-aliasing
-		antialias: true 
+		antialias: SETTINGS.antialias 
 	});
 
 	// Fill entire screen
@@ -101,9 +107,8 @@ function create_scene(element_id, orbit_controls=true){
 	var engine_loop_sfx = new Audio("sounds/engine_loop.ogg");
 	engine_loop_sfx.preload = 'auto';
 	engine_loop_sfx.load();
-	
 
-	return {
+	var SCENE = {
 		scene: scene,
 		HEIGHT: HEIGHT,
 		WIDTH: WIDTH,
@@ -120,6 +125,9 @@ function create_scene(element_id, orbit_controls=true){
 			hit_sfx: hit_sfx,
 			ding_sfx: ding_sfx 
 			} 
-	}
+	};
+
+	
+	return SCENE;
 
 }

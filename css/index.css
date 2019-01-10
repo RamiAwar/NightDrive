@@ -86,5 +86,48 @@ canvas{
 	cursor: pointer;
 }
 
+.dropdown-toggle{
+	display:flex;
+	justify-content: center;
+	align-items: center;
+}
 
+.dropdown-toggle p{
+	margin:0;
+}
 
+.btn-primary{
+	background-color: #EB355F;
+	border-color:#EB355F;
+}
+
+.btn-primary:focus{
+	text-decoration:none;
+	border-color:#BA355F;
+	box-shadow:none;
+}
+
+.btn-primary:hover{
+	border-color:#BA355F;	
+	background-color: #BA355F;
+}
+
+.dropdown-menu{
+	min-width:0px;
+}
+
+.modal-header .close{
+	margin: -1rem -1rem -1rem 0px;
+}
+
+.modal-title{
+	margin:auto;
+}
+
+.settings-title{
+	margin:auto 1rem;
+}
+
+.btn-group{
+	margin:auto 1rem auto auto;
+}

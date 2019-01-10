@@ -57,6 +57,11 @@ function init(){
 	update_score_display();
 	update_distance_display();
 
+
+	$("#save").click(function(){
+		SCENE = update_settings(SCENE);
+	});
+
 	// start game loop
 	game_loop();
 	
