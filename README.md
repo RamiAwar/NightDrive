@@ -21,3 +21,8 @@ This will display the three images side by side if the images are not to wide.
 - Dynamic lighting which is attached to the car, with its position and orientation updated each frame
 - Easily animatable car
 
+## Future Work
+- More performance improvements by limiting collision checks, making lighting controllable from settings menu, controlling shadows from settings menu, controlling camera settings from settings menu...
+- Adding fuel tank collectables
+- Adding touch and keyboard controls
+- Experimenting with sphere instead of cylinder for a ground, allowing for more freedom in movement.
