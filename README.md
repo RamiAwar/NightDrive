@@ -9,9 +9,9 @@ This will display the three images side by side if the images are not to wide.
 </p>
 
 <p float="left">
-  <img src=https://github.com/RamiAwar/NightDrive/raw/master/img/game_3.JPG" width="48%" />
-  <img src=https://github.com/RamiAwar/NightDrive/raw/master/img/game_1.JPG" width="48%" />
-  <img src=https://github.com/RamiAwar/NightDrive/raw/master/img/game_2.JPG" width="48%" />
+  <img src="https://github.com/RamiAwar/NightDrive/raw/master/img/game_3.JPG" width="48%" />
+  <img src="https://github.com/RamiAwar/NightDrive/raw/master/img/game_1.JPG" width="48%" />
+  <img src="https://github.com/RamiAwar/NightDrive/raw/master/img/game_2.JPG" width="48%" />
 </p>
 
 ## Features
