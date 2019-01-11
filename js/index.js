@@ -237,7 +237,7 @@ function check_collision(Player){
 						make_transparent(obj.children[j], 0.4);
 					}	        	
 
-					GAME.health -= 100;
+					GAME.health -= 10;
 
 					if(GAME.score < 0 ) {
 
