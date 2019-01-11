@@ -92,7 +92,9 @@ function end_game(){
 
 	var cookie = getCookie("highscore");
 
-	if (cookie != null){
+	if (cookie != ""){
+
+		console.log(cookie);
 
 		console.log("Cookie already present");
 		highscore = parseInt(cookie);
