@@ -24,7 +24,7 @@ function init(){
 	context = new AudioContext();
 
 	// set up SCENE.scene, camera, SCENE.renderer
-	SCENE = create_scene('world', true);
+	SCENE = create_scene('world', false);
 
 	// set up lighting
 	create_lights(SCENE.scene);
@@ -35,6 +35,7 @@ function init(){
 
 	// Input handler
 	document.addEventListener('mousemove', input_handler, false);
+	document.addEventListener('touchmove', touch_input_handler, false);
 
 	// Start menu handler
 	document.getElementById('play-button').addEventListener('click', ()=>{
@@ -159,6 +160,17 @@ function input_handler(event){
 
 	mouse = {x:x, y:y};
 
+}
+
+function touch_input_handler(event) {
+
+	var movement_speed = 0.3;
+    // event.preventDefault();
+    
+    var tx = (-1 + (event.touches[0].pageX / SCENE.WIDTH)*2)/movement_speed;
+    var ty = 1 - (event.touches[0].pageY / HEIGHT)*2;
+
+    mouse = {x:tx, y:ty};
 }
 
 

@@ -212,3 +212,5 @@ function update_multiplier_display(){
 
 	$("#multiplier").html("x" + GAME.score_multiplier);
 }
+
+

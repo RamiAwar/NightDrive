@@ -17,7 +17,7 @@ function create_scene(element_id, orbit_controls=true){
 	aspect_ratio = WIDTH/HEIGHT;
 	field_of_view = 60; // degrees
 	near_plane = 1;
-	far_plane = 1000;
+	far_plane = 2000;
 	camera = new THREE.PerspectiveCamera(
 		field_of_view, 
 		aspect_ratio, 
@@ -25,9 +25,16 @@ function create_scene(element_id, orbit_controls=true){
 		far_plane
 	);
 
-	camera.position.x = 0;
-	camera.position.z = 600;
-	camera.position.y = 30;
+
+	if(WIDTH > 700){
+		camera.position.x = 0;
+		camera.position.z = 600;
+		camera.position.y = 30;
+	}else{
+		camera.position.x = 0;
+		camera.position.z = 700;
+		camera.position.y = 60;
+	}
 
 	renderer = new THREE.WebGLRenderer({
 
